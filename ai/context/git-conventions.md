@@ -1,0 +1,6 @@
+- Commit message format: `type(scope): description`
+  - Types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`
+  - Scope examples: `adr-006`, `prd`, `openspec`, `gis-api`, `specs`
+- EPL derivative work: see `src/README_Contributing.md` before modifying `src/` or `tools/`.
+- Do not edit generated AI files — edit `ai/` and run `python scripts/sync_ai.py`.
+- Do not edit OpenSpec-managed skills under `.claude/skills/openspec-*`.

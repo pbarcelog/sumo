@@ -1,0 +1,43 @@
+schema: spec-driven
+
+context: |
+  Product: SUMO GIS API — see AGENTS.md § Global context and specs/prd.md.
+  Hard constraints (writable roots, read-only upstream): AGENTS.md § Hard rules
+  and specs/standards/architecture.md.
+
+  MVP formats: GeoJSON, GeoPackage, SQLite (ADR-013), OMX (ADR-012).
+  New code placement: tools/import/gis/ (ADR-009).
+
+  Domain: specs/glossary.md | Interfaces: specs/interfaces.md
+  Architecture: specs/standards/architecture.md
+
+  Spec language: English. Methodology: SDD (PRD → ADRs → OpenSpec → code).
+
+rules:
+  specs:
+    - Every new requirement must reference the PRD section that motivates it,
+      or state "team decision" if it has no PRD origin.
+    - Do not duplicate upstream docs/web/docs/ — cite and synthesize for the fork.
+    - OMX requirements must reference ADR-012; no native SUMO OMX support.
+    - GPKG via GDAL is unverified until tested; mark hypothesis in specs.
+    - Update specs/interfaces.md when a change crosses module boundaries.
+    - Update specs/coverage.md when a slice pass completes.
+    - Update specs/adr-registry.md when an ADR status changes.
+    - Implementation paths must stay within AGENTS.md writable allowlist.
+
+  design:
+    - All architecture visuals must use Mermaid. No external diagram tools.
+    - >-
+      Hard constraints: AGENTS.md § Hard rules — no edits to existing src/ or
+      tools/ files; new code only under tools/import/gis/** (ADR-009).
+    - CRS handling must be explicit — no silent reprojection without logging.
+
+  tasks:
+    - Each slice or ADR change must update specs/coverage.md and/or specs/adr-registry.md (not AGENTS.md tables).
+    - >-
+      Post-apply discipline: after `/opsx:apply` and before `/opsx:archive`,
+      spec-first fixes update OpenSpec artifacts before code.
+    - >-
+      Do not edit generated files in .claude/agents/, .cursor/rules/, or CLAUDE.md
+      directly — edit ai/ and run scripts/sync_ai.py.
+    - Do not edit OpenSpec-managed skills under .claude/skills/openspec-*.

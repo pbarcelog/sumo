@@ -1,0 +1,11 @@
+{
+  "__generated": "DO NOT EDIT. Source: ai/. Regenerate: python scripts/sync_ai.py",
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File ai/scripts/session-start.ps1"
+      }
+    ]
+  }
+}
