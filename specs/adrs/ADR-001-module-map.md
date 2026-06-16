@@ -1,6 +1,6 @@
 # ADR-001: SUMO Module Map
 
-**Status:** Draft (documented from code)
+**Status:** Accepted (documented from code)
 **Tier:** A
 **Sources:** `docs/web/docs/Developer/Implementation_Notes/Sumo_Modules.md`, `src/` layout
 

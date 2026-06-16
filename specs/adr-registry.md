@@ -4,13 +4,13 @@
 
 | # | Title | File | Tier | State | Blocker |
 |---|---|---|---|---|---|
-| ADR-001 | SUMO Module Map | [ADR-001-module-map.md](adrs/ADR-001-module-map.md) | A | **Draft** | — |
-| ADR-002 | Network Import Pipeline | [ADR-002-network-import.md](adrs/ADR-002-network-import.md) | A | **Draft** | — |
-| ADR-003 | Shape/POI Import (polyconvert) | [ADR-003-shape-import.md](adrs/ADR-003-shape-import.md) | A | **Draft** | — |
-| ADR-004 | GDAL Build Dependency | [ADR-004-gdal-dependency.md](adrs/ADR-004-gdal-dependency.md) | A | **Draft** | — |
-| ADR-005 | OD / Demand Pipeline | [ADR-005-od-demand.md](adrs/ADR-005-od-demand.md) | A | **Draft** | — |
-| ADR-006 | Python Orchestration Pattern | [ADR-006-python-orchestration.md](adrs/ADR-006-python-orchestration.md) | A | **Draft** | — |
-| ADR-007 | Data Contracts (XML/XSD) | [ADR-007-data-contracts.md](adrs/ADR-007-data-contracts.md) | A | **Draft** | — |
+| ADR-001 | SUMO Module Map | [ADR-001-module-map.md](adrs/ADR-001-module-map.md) | A | **Accepted** | — |
+| ADR-002 | Network Import Pipeline | [ADR-002-network-import.md](adrs/ADR-002-network-import.md) | A | **Accepted** | GeoJSON gap → ADR-011 |
+| ADR-003 | Shape/POI Import (polyconvert) | [ADR-003-shape-import.md](adrs/ADR-003-shape-import.md) | A | **Accepted** | GPKG unverified |
+| ADR-004 | GDAL Build Dependency | [ADR-004-gdal-dependency.md](adrs/ADR-004-gdal-dependency.md) | A | **Accepted** | — |
+| ADR-005 | OD / Demand Pipeline | [ADR-005-od-demand.md](adrs/ADR-005-od-demand.md) | A | **Accepted** | OMX → ADR-012 |
+| ADR-006 | Python Orchestration Pattern | [ADR-006-python-orchestration.md](adrs/ADR-006-python-orchestration.md) | A | **Accepted** | Option D → ADR-015 |
+| ADR-007 | Data Contracts (XML/XSD) | [ADR-007-data-contracts.md](adrs/ADR-007-data-contracts.md) | A | **Accepted** | — |
 | ADR-008 | API Stack | [ADR-008-api-stack.md](adrs/ADR-008-api-stack.md) | B | **Draft** | Workshop |
 | ADR-009 | Code Placement | [ADR-009-code-placement.md](adrs/ADR-009-code-placement.md) | B | **Accepted** | — |
 | ADR-010 | API Contract (REST) | [ADR-010-api-contract.md](adrs/ADR-010-api-contract.md) | B | **Draft** | Workshop |

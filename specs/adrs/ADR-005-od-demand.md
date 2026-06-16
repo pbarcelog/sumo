@@ -1,6 +1,6 @@
 # ADR-005: OD and Demand Pipeline
 
-**Status:** Draft (documented from code)
+**Status:** Accepted (documented from code)
 **Tier:** A
 **Sources:** `src/od/ODMatrix.cpp`, `docs/web/docs/Demand/Importing_O/D_Matrices.md`
 

@@ -18,6 +18,7 @@
 - SPDX license header on new files (match upstream EPL-2.0 OR GPL-2.0-or-later pattern).
 - Orchestration: save `.netccfg` / `.polycfg` for reproducibility (osmBuild pattern).
 - Subprocess calls: use `cwd=output_directory` with relative paths where possible.
+- Tests: follow `specs/test-strategy.md` — TextTest under `tests/tools/import/gis/**`; resolve binaries via `checkBinary`.
 
 ## API modules (after ADR-008/010)
 

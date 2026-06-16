@@ -1,6 +1,6 @@
 # ADR-003: Shape and POI Import (polyconvert)
 
-**Status:** Draft (documented from code)
+**Status:** Accepted (documented from code)
 **Tier:** A
 **Sources:** `src/polyconvert/`, `docs/web/docs/polyconvert.md`
 

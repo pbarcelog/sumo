@@ -1,6 +1,6 @@
 # ADR-002: Network Import Pipeline
 
-**Status:** Draft (documented from code)
+**Status:** Accepted (documented from code)
 **Tier:** A
 **Sources:** `src/netimport/`, `src/netbuild/`, `docs/web/docs/netconvert.md`
 

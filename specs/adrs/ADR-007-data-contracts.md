@@ -1,6 +1,6 @@
 # ADR-007: Data Contracts (XML/XSD)
 
-**Status:** Draft (documented from code)
+**Status:** Accepted (documented from code)
 **Tier:** A
 **Sources:** `data/xsd/`, `data/typemap/`
 

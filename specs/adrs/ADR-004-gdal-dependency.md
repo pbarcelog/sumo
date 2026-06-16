@@ -1,6 +1,6 @@
 # ADR-004: GDAL Build Dependency
 
-**Status:** Draft (documented from code)
+**Status:** Accepted (documented from code)
 **Tier:** A
 **Sources:** `CMakeLists.txt`, `src/polyconvert/CMakeLists.txt`
 
