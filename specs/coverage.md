@@ -11,11 +11,12 @@ Reconciliation summary: [reconciliation-r2.md](reconciliation-r2.md).
 
 | Field | Value |
 |---|---|
-| **Mode** | Implementation (OpenSpec) |
+| **Mode** | Implementation (in progress) |
 | **Branch** | `feature/importPoC` |
-| **Next** | `/sumo-apply gis-api-mvp` on feature branch |
-| **Blockers** | None — Tier B ADRs 008–015 Accepted (2026-06-16) |
-| **Last completed** | Tier B workshop; slice 6 OpenSpec archived |
+| **Change** | `gis-api-mvp` — initial apply landed under `tools/import/gis/` |
+| **Next** | Harden E2E fixtures; `/check-spec gis-api-mvp`; archive when PRD §6 e2e passes |
+| **Blockers** | GPKG/pyogrio path unverified in CI |
+| **Last completed** | gis-api-mvp scaffold + HTTP/OMX/orchestration MVP |
 
 *Writable code root: `tools/import/gis/**` (ADR-009).*
 

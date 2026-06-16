@@ -28,7 +28,7 @@ Status: `upstream` (existing SUMO), `partial` (exists but incomplete for MVP), `
 
 | GDAL vector layer | GPKG/GeoJSON/SHP | External GIS | polyconvert; netconvert (lines) | upstream | GPKG via GDAL **unverified** |
 
-| OMX matrix | `.omx` | External planning tools | **OMX adapter** → tazRelation | **gap** | No native SUMO reader |
+| OMX matrix | `.omx` | **OMX adapter** → tazRelation | **partial** | `tools/import/gis/omx/` (ADR-012) |
 
 | SQLite spatial | SpatiaLite / tables | External | API normalization (ADR-013) | **partial** | SpatiaLite + attribute joins; schema introspection |
 
@@ -48,7 +48,7 @@ Status: `upstream` (existing SUMO), `partial` (exists but incomplete for MVP), `
 
 | Fork integration tests | TextTest `*.tools` collateral | `tests/tools/import/gis/` runners | CI `-a tools` | **gap** | Harness contract IF-TEST-001; see `specs/test-strategy.md` |
 
-| HTTP REST API | JSON / multipart | `tools/import/gis/api/` | API clients | **gap** | ADR-008 FastAPI; ADR-010 `/v1/scenarios` contract |
+| HTTP REST API | JSON / multipart | `tools/import/gis/api/` | API clients | **partial** | FastAPI `/v1/scenarios` (ADR-010) |
 
 | TraCI simulation step | sim time advance | `traci.simulationStep` | monitoring clients | upstream | Used by drt/fcdReplay; **not** osmBuild/osmWebWizard |
 
@@ -233,5 +233,6 @@ sequenceDiagram
 | 2026-06-15 | Slice 7: TextTest conventions → `specs/test-strategy.md`; TraCI regression confirmed in `tests/complex/traci/` + `tests/traci/`; `checkBinary` CI via `runTests.sh` + `sumolib/init`; IF-TEST-001 stub |
 | 2026-06-15 | R2: Tier A ADR-001–007 Accepted; context extraction archived → `specs/archive/context-extraction.md`; gaps G-1–G-8 → Tier B workshop |
 | 2026-06-16 | Tier B workshop: ADR-008–015 Accepted; HTTP REST row; SQLite `partial`; simulation v1 subprocess + local FS; fuzzy TAZ join deferred v2 |
+| 2026-06-16 | gis-api-mvp apply: HTTP + OMX adapter `partial`; implementation under `tools/import/gis/` |
 
 
