@@ -1,12 +1,9 @@
-# sumolib / TraCI Integration
+# sumolib-traci-integration
 
 Capability spec for sumolib orchestration helpers and simulation control options in the GIS API fork.
 
-**Change:** document-sumolib-traci-slice
 **ADR:** ADR-006, ADR-015
 **PRD:** §3, §5
-
----
 
 ## Requirements
 
@@ -19,18 +16,14 @@ The orchestrator MUST resolve SUMO executables using `sumolib.checkBinary(name, 
 - **WHEN** tests run with `SUMO_BINARY` set
 - **THEN** `checkBinary` returns that path (see `tests/tools/sumolib/init/runner.py`)
 
----
-
 ### Requirement: Configuration template discovery
 
-Orchestrators MAY populate CLI options via `sumolib.options.pullOptions(executable, parser)` which reads `executable --save-template` (`options.py:88–90`).
+Orchestrators MUST support populating CLI options via `sumolib.options.pullOptions(executable, parser)` which reads `executable --save-template` (`options.py:88–90`).
 
 #### Scenario: Dynamic netconvert options
 
 - **WHEN** API exposes advanced netconvert flags
 - **THEN** options match upstream binary template groups
-
----
 
 ### Requirement: XML artifact headers
 
@@ -41,40 +34,32 @@ Fork-generated SUMO XML MUST use `sumolib.xml.writeHeader` (or `writeXMLHeader` 
 - **WHEN** orchestrator writes `<additional>` XML
 - **THEN** header includes root element and XSD reference (osmWebWizard pattern)
 
----
-
 ### Requirement: Network inspection after build
 
-The orchestrator MAY call `sumolib.net.readNet(path)` for validation, routing, or lon/lat conversion when `pyproj` and net geo-projection are available.
+The orchestrator MUST support `sumolib.net.readNet(path)` for validation, routing, or lon/lat conversion when `pyproj` and net geo-projection are available.
 
 #### Scenario: Geo API response
 
 - **WHEN** client requests coordinates in WGS84
 - **THEN** `Net.convertXY2LonLat` is used on the scenario's `.net.xml`
 
----
+### Requirement: Simulation run default (ADR-015)
 
-### Requirement: Simulation run default (ADR-015 pending)
-
-Documentation MUST state that osmBuild and osmWebWizard run `sumo` via **subprocess** with `.sumocfg`, not TraCI.
+Documentation MUST state that osmBuild and osmWebWizard run `sumo` via **subprocess** with `.sumocfg`, not TraCI. ADR-015 Accepted: v1 API uses subprocess Option A.
 
 #### Scenario: MVP run without live control
 
-- **WHEN** ADR-015 Option A is selected
-- **THEN** API invokes `subprocess` with `sumo -c scenario.sumocfg` and collects XML outputs
+- **WHEN** API runs simulation per ADR-015
+- **THEN** orchestrator invokes `subprocess` with `sumo -c scenario.sumocfg` and collects XML outputs
 
----
+### Requirement: TraCI documented as deferred control plane
 
-### Requirement: TraCI documented as optional control plane
+TraCI (Option B) and libsumo/libtraci (Option D) are deferred to v2 per ADR-015. If adopted later, the API MUST use `traci.start([sumo, "-c", cfg])`, advance via `traci.simulationStep`, and close with `traci.close` (`traci/main.py`).
 
-If ADR-015 selects TraCI (Option B), the API MUST use `traci.start([sumo, "-c", cfg])` or equivalent, advance via `traci.simulationStep`, and close with `traci.close` (`traci/main.py`).
+#### Scenario: Step-wise monitoring deferred
 
-#### Scenario: Step-wise monitoring
-
-- **WHEN** client requests live vehicle counts during run
-- **THEN** TraCI `vehicle` and `simulation` domains are consulted (workshop defines API surface)
-
----
+- **WHEN** v1 client requests simulation
+- **THEN** subprocess path is used; TraCI live monitoring is not exposed
 
 ### Requirement: Libsumo environment switch documented
 
@@ -82,10 +67,8 @@ Agents MUST NOT assume libsumo unless `LIBSUMO_AS_TRACI` is set; default import 
 
 #### Scenario: Headless API container
 
-- **WHEN** evaluating in-process simulation
-- **THEN** workshop considers libsumo multiprocessing limits per `docs/web/docs/Libsumo.md`
-
----
+- **WHEN** evaluating in-process simulation for v2
+- **THEN** libsumo multiprocessing limits per `docs/web/docs/Libsumo.md` are considered
 
 ### Requirement: Out-of-scope sumolib packages
 

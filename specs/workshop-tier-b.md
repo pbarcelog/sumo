@@ -59,4 +59,4 @@
 1. [x] Update each ADR status to **Accepted** with decision recorded.
 2. [x] Update [specs/adr-registry.md](adr-registry.md) and each ADR file.
 3. [x] Activate `specs/standards/api-standards.md`.
-4. [ ] Propose first implementation OpenSpec change: **`gis-api-mvp`**.
+4. [x] Propose first implementation OpenSpec change: **`gis-api-mvp`** (2026-06-16).

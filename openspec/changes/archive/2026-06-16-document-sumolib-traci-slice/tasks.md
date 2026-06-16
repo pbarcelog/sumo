@@ -13,9 +13,9 @@
 
 - [x] 2.1 Cross-check ADR-006 against `tools/sumolib/__init__.py`, `options.py`, `net/__init__.py`, `traci/main.py`
 - [x] 2.2 Verify osmBuild/osmWebWizard do not use TraCI (grep)
-- [ ] 2.3 Run `openspec validate document-sumolib-traci-slice` (when CLI available)
+- [x] 2.3 Run `openspec validate document-sumolib-traci-slice` (when CLI available)
 
 ## 3. Archive prep
 
-- [ ] 3.1 Review with Pablo (open questions for Tier B)
-- [ ] 3.2 `/opsx:archive document-sumolib-traci-slice` when approved
+- [x] 3.1 Review with Pablo (open questions for Tier B)
+- [x] 3.2 `/opsx:archive document-sumolib-traci-slice` when approved

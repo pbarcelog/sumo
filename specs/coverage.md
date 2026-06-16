@@ -12,9 +12,10 @@ Reconciliation summary: [reconciliation-r2.md](reconciliation-r2.md).
 | Field | Value |
 |---|---|
 | **Mode** | Implementation (OpenSpec) |
-| **Next** | `/sumo-propose gis-api-mvp` → `/sumo-apply` |
+| **Branch** | `feature/importPoC` |
+| **Next** | `/sumo-apply gis-api-mvp` on feature branch |
 | **Blockers** | None — Tier B ADRs 008–015 Accepted (2026-06-16) |
-| **Last completed** | Tier B workshop |
+| **Last completed** | Tier B workshop; slice 6 OpenSpec archived |
 
 *Writable code root: `tools/import/gis/**` (ADR-009).*
 
