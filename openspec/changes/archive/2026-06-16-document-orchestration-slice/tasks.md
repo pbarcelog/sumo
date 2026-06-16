@@ -12,9 +12,9 @@
 
 - [x] 2.1 Cross-check ADR-006 against osmBuild.py line-by-line
 - [x] 2.2 Verify ADR-006 row in `specs/adr-registry.md`
-- [ ] 2.3 Run `openspec validate document-orchestration-slice` (when CLI available)
+- [x] 2.3 Run `openspec validate document-orchestration-slice` (when CLI available)
 
 ## 3. Archive prep
 
-- [ ] 3.1 Review with Pablo
-- [ ] 3.2 `/opsx:archive document-orchestration-slice` when approved
+- [x] 3.1 Review with Pablo
+- [x] 3.2 `/opsx:archive document-orchestration-slice` when approved

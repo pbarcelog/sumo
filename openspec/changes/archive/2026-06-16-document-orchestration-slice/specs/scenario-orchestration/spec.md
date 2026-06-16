@@ -1,14 +1,11 @@
 # Scenario Orchestration
 
-Capability spec for Python orchestration of SUMO binaries in the GIS API fork.
+Capability spec for Python orchestration of SUMO binaries in the GIS API fork (slice 1 brownfield).
 
-**Change:** document-orchestration-slice
 **ADR:** ADR-006
 **PRD:** §1, §5
 
----
-
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Binary resolution via sumolib
 
@@ -19,8 +16,6 @@ The orchestrator MUST resolve SUMO binaries using `sumolib.checkBinary(name, bin
 - **WHEN** `SUMO_HOME` is unset and binaries are not on PATH
 - **THEN** the orchestrator fails with an explicit error before invoking subprocess
 
----
-
 ### Requirement: Configuration reproducibility
 
 Each netconvert and polyconvert invocation MUST support saving configuration to `.netccfg` / `.polycfg` for audit and replay, following the `osmBuild.py` pattern.
@@ -29,8 +24,6 @@ Each netconvert and polyconvert invocation MUST support saving configuration to 
 
 - **WHEN** a `.netccfg` exists from a prior build
 - **THEN** `netconvert -c <cfg>` reproduces the same import options
-
----
 
 ### Requirement: Working directory discipline
 
@@ -41,8 +34,6 @@ Subprocess calls MUST use `cwd=output_directory` with relative paths where possi
 - **WHEN** building scenario `abc123`
 - **THEN** all outputs land under the scenario output directory without path leakage
 
----
-
 ### Requirement: Early validation
 
 The orchestrator MUST validate inputs (files exist, output directory exists, required typemaps present) before long-running netconvert execution.
@@ -52,11 +43,9 @@ The orchestrator MUST validate inputs (files exist, output directory exists, req
 - **WHEN** polyconvert typemap is configured but file is missing
 - **THEN** fail before netconvert completes (osmBuild early check pattern)
 
----
-
 ### Requirement: Target pipeline steps (API MVP)
 
-The GIS API orchestrator MUST support the following ordered steps (implementation deferred to ADR-008+):
+The GIS API orchestrator MUST support the following ordered steps (implemented in `gis-api-mvp`):
 
 1. GIS normalization (ADR-011)
 2. netconvert → `.net.xml`
@@ -76,8 +65,6 @@ The GIS API orchestrator MUST support the following ordered steps (implementatio
 
 - **WHEN** client uploads spatial data and OMX matrix
 - **THEN** all applicable steps execute; failures at any step abort with logged step name
-
----
 
 ### Requirement: osmBuild as reference implementation
 

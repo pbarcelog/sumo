@@ -25,5 +25,5 @@
 
 ## 5. Archive prep
 
-- [ ] 5.1 Pablo review
-- [ ] 5.2 `/opsx:archive bootstrap-sdd-layer` when approved
+- [x] 5.1 Pablo review
+- [x] 5.2 `/opsx:archive bootstrap-sdd-layer` when approved
