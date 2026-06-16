@@ -9,23 +9,23 @@
 | ADR-003 | Shape/POI Import (polyconvert) | [ADR-003-shape-import.md](adrs/ADR-003-shape-import.md) | A | **Accepted** | GPKG unverified |
 | ADR-004 | GDAL Build Dependency | [ADR-004-gdal-dependency.md](adrs/ADR-004-gdal-dependency.md) | A | **Accepted** | — |
 | ADR-005 | OD / Demand Pipeline | [ADR-005-od-demand.md](adrs/ADR-005-od-demand.md) | A | **Accepted** | OMX → ADR-012 |
-| ADR-006 | Python Orchestration Pattern | [ADR-006-python-orchestration.md](adrs/ADR-006-python-orchestration.md) | A | **Accepted** | Option D → ADR-015 |
+| ADR-006 | Python Orchestration Pattern | [ADR-006-python-orchestration.md](adrs/ADR-006-python-orchestration.md) | A | **Accepted** | — |
 | ADR-007 | Data Contracts (XML/XSD) | [ADR-007-data-contracts.md](adrs/ADR-007-data-contracts.md) | A | **Accepted** | — |
-| ADR-008 | API Stack | [ADR-008-api-stack.md](adrs/ADR-008-api-stack.md) | B | **Draft** | Workshop |
+| ADR-008 | API Stack | [ADR-008-api-stack.md](adrs/ADR-008-api-stack.md) | B | **Accepted** | — |
 | ADR-009 | Code Placement | [ADR-009-code-placement.md](adrs/ADR-009-code-placement.md) | B | **Accepted** | — |
-| ADR-010 | API Contract (REST) | [ADR-010-api-contract.md](adrs/ADR-010-api-contract.md) | B | **Draft** | Workshop |
-| ADR-011 | GIS Normalization Layer | [ADR-011-gis-normalization.md](adrs/ADR-011-gis-normalization.md) | B | **Draft** | Workshop |
-| ADR-012 | OMX Adapter | [ADR-012-omx-adapter.md](adrs/ADR-012-omx-adapter.md) | B | **Draft** | Workshop |
-| ADR-013 | SQLite Role | [ADR-013-sqlite-role.md](adrs/ADR-013-sqlite-role.md) | B | **Draft** | Workshop |
-| ADR-014 | TAZ Derivation | [ADR-014-taz-derivation.md](adrs/ADR-014-taz-derivation.md) | B | **Draft** | Workshop |
-| ADR-015 | Simulation Execution | [ADR-015-simulation-execution.md](adrs/ADR-015-simulation-execution.md) | B | **Draft** | Workshop |
+| ADR-010 | API Contract (REST) | [ADR-010-api-contract.md](adrs/ADR-010-api-contract.md) | B | **Accepted** | — |
+| ADR-011 | GIS Normalization Layer | [ADR-011-gis-normalization.md](adrs/ADR-011-gis-normalization.md) | B | **Accepted** | GPKG path unverified |
+| ADR-012 | OMX Adapter | [ADR-012-omx-adapter.md](adrs/ADR-012-omx-adapter.md) | B | **Accepted** | — |
+| ADR-013 | SQLite Role | [ADR-013-sqlite-role.md](adrs/ADR-013-sqlite-role.md) | B | **Accepted** | — |
+| ADR-014 | TAZ Derivation | [ADR-014-taz-derivation.md](adrs/ADR-014-taz-derivation.md) | B | **Accepted** | Fuzzy join → v2 |
+| ADR-015 | Simulation Execution | [ADR-015-simulation-execution.md](adrs/ADR-015-simulation-execution.md) | B | **Accepted** | TraCI/libsumo → v2 |
 
 ## Conventions
 
 - File pattern: `specs/adrs/ADR-NNN-<slug>.md`
 - States: `Draft → Proposed → Accepted | Superseded`
 - Tier **A**: document as-built from codebase; may reach **Accepted (documented from code)** after reconciliation.
-- Tier **B**: workshop decisions; gate API implementation. Checklist: [workshop-tier-b.md](workshop-tier-b.md).
+- Tier **B**: workshop decisions; gate API implementation. Checklist: [workshop-tier-b.md](workshop-tier-b.md) (**complete** 2026-06-16).
 
 ## Maintenance
 

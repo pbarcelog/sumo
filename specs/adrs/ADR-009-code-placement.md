@@ -26,6 +26,10 @@ New GIS API code must live in the SUMO tree without modifying upstream files. `t
 
 Only `tools/import/gis/**` (and its tests) are new code under `tools/`. Siblings such as `tools/import/gtfs/` remain read-only. See `specs/standards/architecture.md`.
 
+### Upstream contribution intent
+
+**Fork-only for v1.** No planned upstream PR to Eclipse SUMO while the API contract and OMX/GIS paths stabilize. Revisit **eventual PR** as `tools/import/gis/` after MVP validation and EPL contribution review (`src/README_Contributing.md`).
+
 ### Rejected options
 
 | Option | Reason |

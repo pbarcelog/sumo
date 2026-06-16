@@ -30,7 +30,7 @@ Status: `upstream` (existing SUMO), `partial` (exists but incomplete for MVP), `
 
 | OMX matrix | `.omx` | External planning tools | **OMX adapter** → tazRelation | **gap** | No native SUMO reader |
 
-| SQLite spatial | SpatiaLite / tables | External | API normalization | **unverified** | ADR-013 |
+| SQLite spatial | SpatiaLite / tables | External | API normalization (ADR-013) | **partial** | SpatiaLite + attribute joins; schema introspection |
 
 | Typemap | `.typ.xml` | `data/typemap/` | netconvert, polyconvert | upstream | Schema mapping |
 
@@ -47,6 +47,8 @@ Status: `upstream` (existing SUMO), `partial` (exists but incomplete for MVP), `
 | TraCI connection | TCP socket / libsumo / libtraci | `traci.start` / `traci.connect` | step loop, domain getters | upstream | Socket default; regression in `tests/complex/traci/`, `tests/traci/`; libsumo CI via `complex.libsumo`; fork Option D **unverified** (ADR-015) |
 
 | Fork integration tests | TextTest `*.tools` collateral | `tests/tools/import/gis/` runners | CI `-a tools` | **gap** | Harness contract IF-TEST-001; see `specs/test-strategy.md` |
+
+| HTTP REST API | JSON / multipart | `tools/import/gis/api/` | API clients | **gap** | ADR-008 FastAPI; ADR-010 `/v1/scenarios` contract |
 
 | TraCI simulation step | sim time advance | `traci.simulationStep` | monitoring clients | upstream | Used by drt/fcdReplay; **not** osmBuild/osmWebWizard |
 
@@ -230,5 +232,6 @@ sequenceDiagram
 | 2026-06-15 | Slice 6 reconcile: socket TraCI `upstream`; libsumo/libtraci fork paths `unverified`; Option A output `tripinfos.xml`; libsumo `connect` N/A noted |
 | 2026-06-15 | Slice 7: TextTest conventions → `specs/test-strategy.md`; TraCI regression confirmed in `tests/complex/traci/` + `tests/traci/`; `checkBinary` CI via `runTests.sh` + `sumolib/init`; IF-TEST-001 stub |
 | 2026-06-15 | R2: Tier A ADR-001–007 Accepted; context extraction archived → `specs/archive/context-extraction.md`; gaps G-1–G-8 → Tier B workshop |
+| 2026-06-16 | Tier B workshop: ADR-008–015 Accepted; HTTP REST row; SQLite `partial`; simulation v1 subprocess + local FS; fuzzy TAZ join deferred v2 |
 
 

@@ -1,13 +1,14 @@
 # ADR-013: SQLite Role
 
-**Status:** Draft — **workshop required**
+**Status:** Accepted
 **Tier:** B
+**Date:** 2026-06-16
 
 ## Context
 
 SQLite is an MVP spatial input (PRD §2). Role may be SpatiaLite geometry, plain attribute tables, or both.
 
-## Options
+## Options considered
 
 | Option | Use case |
 |---|---|
@@ -18,15 +19,27 @@ SQLite is an MVP spatial input (PRD §2). Role may be SpatiaLite geometry, plain
 
 ## Decision
 
-**Pending workshop with Pablo.**
+**Option D** — SQLite is a flexible container for v1:
 
-Recommendation: **Option D** — treat SQLite as flexible container; API introspects schema.
+| Role | Support |
+|---|---|
+| **SpatiaLite geometry** | Yes — read via pyogrio like GPKG layers |
+| **Plain attribute tables** | Yes — join to spatial features by agreed key column |
+| **Schema discovery** | API introspects tables; document required conventions in OpenAPI |
+
+### Schema conventions (v1)
+
+- Geometry tables: standard SpatiaLite `geometry_columns` / `spatial_ref_sys` when present.
+- Zone identifiers: column `zone_id` (or `id`) on polygon/centroid layers **must match** OMX zone ids when demand is supplied (ADR-014).
+- Attribute joins: `build_options.sqlite_joins` maps `{spatial_table, attr_table, key}`.
+- Reject ambiguous multi-geometry tables without explicit layer/table selection.
 
 ## Consequences
 
-- Normalization layer (ADR-011) needs SQLite schema discovery.
-- Document required table/column conventions in API docs.
+- Normalization layer (ADR-011) implements SQLite introspection alongside GPKG.
+- Full-model SQLite scenarios (consistent centroid ↔ OD ↔ zone ids) are first-class v1 path.
 
 ## References
 
-- PRD §2 open items
+- PRD §2
+- ADR-011, ADR-014

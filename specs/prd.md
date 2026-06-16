@@ -41,12 +41,7 @@ The API **does not modify** upstream SUMO (`src/` or existing `tools/` files). N
 
 ### Open items
 
-| Item | ADR |
-|---|---|
-| SQLite geometry vs attributes | ADR-013 |
-| OMX zone ID ↔ TAZ mapping | ADR-014 |
-| REST contract details | ADR-010 |
-| API framework and async jobs | ADR-008 |
+*All Tier B workshop items resolved 2026-06-16 — see ADR-008 through ADR-015.*
 
 ---
 

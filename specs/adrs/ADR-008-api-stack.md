@@ -1,14 +1,14 @@
 # ADR-008: API Stack
 
-**Status:** Draft — **workshop required**
+**Status:** Accepted
 **Tier:** B
-**Blocks:** First API implementation OpenSpec change
+**Date:** 2026-06-16
 
 ## Context
 
 PRD §1 requires an HTTP API. Framework, async job handling, and packaging are undecided.
 
-## Options
+## Options considered
 
 | Option | Pros | Cons |
 |---|---|---|
@@ -17,24 +17,22 @@ PRD §1 requires an HTTP API. Framework, async job handling, and packaging are u
 | **C: FastAPI + Celery/RQ + Redis** | Durable jobs; scalable | Infra complexity |
 | **D: Flask + Gunicorn** | Familiar | Less OpenAPI-native than FastAPI |
 
-## Packaging
-
-| Option | Notes |
-|---|---|
-| Docker single container | SUMO binaries + API + GDAL |
-| Bare metal | `SUMO_HOME` on host; API as systemd service |
-
 ## Decision
 
-**Pending workshop with Pablo.**
+**Framework:** FastAPI (OpenAPI 3.x native).
 
-Recommendation for v1 prototype: **Option A or B** (FastAPI) with file-based job status; escalate to C if build times exceed HTTP timeout.
+**Job model:** FastAPI **asyncio background tasks** for build and simulation steps. Job status persisted as JSON on local filesystem under the scenario workspace (ADR-015). Escalate to Celery/RQ + Redis only if build times exceed acceptable polling windows or multi-instance deployment requires durable queues.
+
+**Packaging:** **Docker** single container — SUMO binaries, GDAL, Python API dependencies, and writable scenario workspace volume.
 
 ## Consequences
 
-- ADR-010 REST design depends on sync vs async job model.
-- ADR-015 simulation execution shares job infrastructure.
+- ADR-010 REST design uses async job pattern: `POST` returns scenario id immediately; clients poll `GET /v1/scenarios/{id}/status`.
+- ADR-015 simulation runs share the same background-task and status-file infrastructure.
+- `tools/import/gis/api/` hosts FastAPI app; Uvicorn as ASGI server in container.
+- v1 does not require Redis or Celery.
 
 ## References
 
 - PRD §3
+- ADR-009, ADR-010, ADR-015

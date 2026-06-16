@@ -1,14 +1,14 @@
 # ADR-011: GIS Normalization Layer
 
-**Status:** Draft — **workshop required**
+**Status:** Accepted
 **Tier:** B
-**Blocks:** GeoJSON/GPKG/SQLite network path
+**Date:** 2026-06-16
 
 ## Context
 
 ADR-002 documents gaps: no native GeoJSON/GPKG/SQLite network import. API must normalize before calling netconvert/polyconvert.
 
-## Options
+## Options considered
 
 | Option | Approach |
 |---|---|
@@ -17,24 +17,24 @@ ADR-002 documents gaps: no native GeoJSON/GPKG/SQLite network import. API must n
 | **C** | Extend polyconvert/netconvert C++ (out of scope v1) |
 | **D** | Hybrid: geopandas for inspection + shapefile export for netconvert |
 
-## CRS policy (must decide)
-
-- Auto-detect from source vs require client-supplied EPSG?
-- Always reproject to network CRS before netconvert?
-- Log all transforms (PRD §4)?
-
 ## Decision
 
-**Pending workshop.**
+**Library:** **geopandas + pyogrio** in `tools/import/gis/normalize/` (Option A). Export to formats netconvert/polyconvert accept (shapefile, GeoJSON) before subprocess invocation. No C++ changes.
 
-Recommendation: **Option A/D** — Python normalization in API service, reuse SUMO binaries unchanged.
+**CRS policy:**
+
+1. **Auto-detect** CRS from source when present (GeoPackage, GeoJSON `crs`, SpatiaLite metadata).
+2. Client MAY supply EPSG in `build_options.crs` to override or disambiguate.
+3. **Always reproject** to the network CRS before netconvert when building road geometry.
+4. **Log every transform** applied (PRD §4 quality bar).
 
 ## Consequences
 
-- Python dependencies: geopandas, pyogrio, pyproj (add to API requirements).
-- ADR-004 GDAL in SUMO build still required for polyconvert path.
+- Python dependencies: `geopandas`, `pyogrio`, `pyproj` in API container image.
+- ADR-004 GDAL in SUMO build still required for polyconvert upstream path.
+- GPKG via pyogrio remains **unverified** until fork integration tests pass; failures must be explicit.
 
 ## References
 
-- ADR-002, ADR-003
+- ADR-002, ADR-003, ADR-013
 - PRD §2, §4

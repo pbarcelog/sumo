@@ -11,12 +11,12 @@ Reconciliation summary: [reconciliation-r2.md](reconciliation-r2.md).
 
 | Field | Value |
 |---|---|
-| **Mode** | Tier B workshop |
-| **Next** | [workshop-tier-b.md](workshop-tier-b.md) — ADR-008 through ADR-015 |
-| **Blockers** | Workshop decisions before first API OpenSpec change |
-| **Last completed** | R2 (Tier A ADR-001–007 Accepted) |
+| **Mode** | Implementation (OpenSpec) |
+| **Next** | `/sumo-propose gis-api-mvp` → `/sumo-apply` |
+| **Blockers** | None — Tier B ADRs 008–015 Accepted (2026-06-16) |
+| **Last completed** | Tier B workshop |
 
-*After workshop: update [adr-registry.md](adr-registry.md) and propose `gis-api-mvp` via `/sumo-propose`.*
+*Writable code root: `tools/import/gis/**` (ADR-009).*
 
 ---
 
