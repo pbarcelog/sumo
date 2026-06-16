@@ -28,7 +28,7 @@ See `specs/interfaces.md` reconciliation log. Key findings:
 | ADR-003 | polyconvert | Yes (GPKG caveat documented) |
 | ADR-004 | GDAL | Yes |
 | ADR-005 | OD/OMX | Yes |
-| ADR-006 | orchestration | Yes (slice 1) |
+| ADR-006 | orchestration + sumolib/TraCI | Yes (slice 6) |
 | ADR-007 | XSD | Yes |
 
 ## Tier B workshop pack
@@ -49,7 +49,21 @@ flowchart LR
   ADR006[ADR006_orch] --> ADR008[ADR008_API]
 ```
 
-## Next slices (pending)
+## Slice 6 reconcile (ADR-006 extensions)
 
-- Slice 6: `tools/sumolib/` — extend ADR-006
-- Slice 7: `tests/`, CI conventions
+**Date:** 2026-06-15  
+**Verified against:** ADR-015, `interfaces.md` simulation sequences, glossary TraCI/Libsumo/Libtraci.
+
+| Finding | Action applied |
+|---|---|
+| TraCI status `upstream` vs ADR-006 `unverified` | ADR-006: socket TraCI `upstream` (`tests/complex/traci/`, `tests/traci/`); libsumo CI in `test-wheels.yml`; fork Option D `unverified` until ADR-015 |
+| Misleading “no TraCI tests” | ADR-006 consequences reworded — no `tests/tools/traci/`; coverage in `tests/complex/traci/` and `tests/traci/` |
+| `traci.connect` vs Libsumo | `interfaces.md` TraCI row: `connect`/`init` N/A when `LIBSUMO_AS_TRACI=1` |
+| Option D libtraci missing | ADR-006 flowchart: `LIBTRACI_AS_TRACI` branch added |
+| `tripinfo.xml` vs `tripinfos.xml` | `interfaces.md` Option A sequence corrected |
+| `libsumo.start` not in ADR-006 lifecycle | Connection lifecycle table row added |
+| Workshop checklist libtraci | `workshop-tier-b.md` ADR-015 lists libsumo or libtraci |
+
+## Next steps (post–R2)
+
+Context extraction complete — see [reconciliation-r2.md](reconciliation-r2.md). Tier B workshop: [workshop-tier-b.md](workshop-tier-b.md).

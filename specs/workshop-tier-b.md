@@ -1,7 +1,7 @@
 # Tier B ADR Workshop — Decision Checklist
 
 **Purpose:** Gate first API implementation OpenSpec change.
-**Status:** Awaiting decisions from Pablo
+**Status:** **Next** — context extraction complete (R2); awaiting Pablo's decisions
 
 Work through each ADR in order. Record decision and date in the ADR file when accepted.
 
@@ -50,7 +50,7 @@ Work through each ADR in order. Record decision and date in the ADR file when ac
 
 ## ADR-015 Simulation Execution
 
-- [ ] Execution: subprocess sumo (recommended) / TraCI / libsumo
+- [ ] Execution: subprocess sumo (recommended) / TraCI socket / libsumo or libtraci (Option D)
 - [ ] Artifact storage: local filesystem / object storage
 
 ---
