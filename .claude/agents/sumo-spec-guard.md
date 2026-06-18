@@ -17,11 +17,11 @@ Read in order:
 
 1. `AGENTS.md` — hard rules, writable allowlist, § Active focus, post-apply discipline
 2. `specs/adr-registry.md` — ADR status index
-2. `specs/standards/architecture.md` — upstream vs fork
-3. `specs/prd.md` — especially §4 quality bars
-3. `specs/glossary.md`
-4. `openspec/config.yaml` — context + rules
-5. Target change folder: proposal, design, tasks, delta spec(s)
+3. `specs/standards/architecture.md` — upstream vs fork
+4. `specs/prd.md` — especially §4 quality bars
+5. `specs/glossary.md`
+6. `openspec/config.yaml` — context + rules
+7. Target change folder: proposal, design, tasks, delta spec(s), `data-inventory.md` when present
 
 ## Critics
 

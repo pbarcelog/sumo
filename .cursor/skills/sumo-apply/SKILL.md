@@ -18,7 +18,7 @@ Read `AGENTS.md`, change proposal/design/tasks, relevant ADRs for the change sco
 
 - Follow `specs/standards/python-standards.md` for new Python code.
 - Use `sumolib.checkBinary` for SUMO subprocess calls (ADR-006).
-- Post-apply fixes: update artefacts before code (AGENTS.md hard rule #4).
+- Post-apply fixes: update artefacts before code (AGENTS.md hard rule #5).
 
 ## Post-apply (optional)
 
