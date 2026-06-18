@@ -13,10 +13,10 @@ Reconciliation summary: [reconciliation-r2.md](reconciliation-r2.md).
 |---|---|
 | **Mode** | Implementation (in progress) |
 | **Branch** | `feature/importPoC` |
-| **Change** | `gis-api-mvp` — initial apply landed under `tools/import/gis/` |
-| **Next** | Harden E2E fixtures; `/check-spec gis-api-mvp`; archive when PRD §6 e2e passes |
-| **Blockers** | GPKG/pyogrio path unverified in CI |
-| **Last completed** | gis-api-mvp scaffold + HTTP/OMX/orchestration MVP |
+| **Change** | `import-network-sqlite` — VISUM SQLite network import applied under `tools/import/gis/` |
+| **Next** | Archive `import-network-sqlite` when PRD §6 e2e passes (OD import + runnable Karlsruhe scenario) |
+| **Blockers** | GPKG/pyogrio path unverified in CI; full Karlsruhe microsim blocked on OD import and control-plan work |
+| **Last completed** | import-network-sqlite netconvert smoke (eclipse-sumo 1.27.0): Karlsruhe `net.xml` builds and loads; 23/23 tests pass |
 
 *Writable code root: `tools/import/gis/**` (ADR-009).*
 

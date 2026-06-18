@@ -30,7 +30,7 @@ Status: `upstream` (existing SUMO), `partial` (exists but incomplete for MVP), `
 
 | OMX matrix | `.omx` | **OMX adapter** → tazRelation | **partial** | `tools/import/gis/omx/` (ADR-012) |
 
-| SQLite spatial | SpatiaLite / tables | External | API normalization (ADR-013) | **partial** | SpatiaLite + attribute joins; schema introspection |
+| SQLite spatial | SpatiaLite / tables | External | API normalization (ADR-013) | **partial** | SpatiaLite + attribute joins; schema introspection. VISUM-relational network import implemented: `tools/import/gis/normalize/visum_sqlite.py` → plain XML → netconvert (`network-import-sqlite`) |
 
 | Typemap | `.typ.xml` | `data/typemap/` | netconvert, polyconvert | upstream | Schema mapping |
 
@@ -58,7 +58,7 @@ Status: `upstream` (existing SUMO), `partial` (exists but incomplete for MVP), `
 
 ## Test harness contract (IF-TEST-001)
 
-**Status:** `gap` (stub only — no `tests/tools/import/gis/` yet)
+**Status:** `partial` — pytest suite under `tests/tools/import/gis/` (incl. `network/test_visum_sqlite.py`); not yet wired into upstream TextTest `config.tools` CI
 
 | Field | Convention |
 |---|---|
@@ -234,5 +234,6 @@ sequenceDiagram
 | 2026-06-15 | R2: Tier A ADR-001–007 Accepted; context extraction archived → `specs/archive/context-extraction.md`; gaps G-1–G-8 → Tier B workshop |
 | 2026-06-16 | Tier B workshop: ADR-008–015 Accepted; HTTP REST row; SQLite `partial`; simulation v1 subprocess + local FS; fuzzy TAZ join deferred v2 |
 | 2026-06-16 | gis-api-mvp apply: HTTP + OMX adapter `partial`; implementation under `tools/import/gis/` |
+| 2026-06-18 | import-network-sqlite apply: VISUM SQLite → net.xml normalizer (`normalize/visum_sqlite.py`, `modes.py`, `speed.py`; `orchestrate/netbuild.py`); SQLite row enriched; per-mode LINKTYPE speeds + restrictions; real Karlsruhe normalization verified (8432 nodes / 19401 edges / 0 zero-speed); netconvert smoke via eclipse-sumo 1.27.0 (`test_real_karlsruhe_build_loads`, 23/23 tests) |
 
 
