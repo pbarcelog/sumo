@@ -4,6 +4,13 @@ OMX to SUMO demand format adapter (ADR-012).
 
 **PRD:** §2
 
+> **Supersession (2026-06-22):** Normative OMX adapter behavior for named mapping (`NO`), per-core
+> intervals (`interval id` = vType), and strict zone alignment is defined in the archived capability
+> **`od-import-demand`** (`openspec/specs/od-import-demand/spec.md` and archived
+> `openspec/changes/archive/2026-06-22-import-od-demand/data-inventory.md`). This skeleton spec remains as the
+> `gis-api-mvp` placeholder; do not archive contradictory interval-slice or default-vType-only
+> behavior when merging `import-od-demand`.
+
 ## ADDED Requirements
 
 ### Requirement: Convert OMX to tazRelation XML

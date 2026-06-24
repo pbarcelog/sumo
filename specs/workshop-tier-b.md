@@ -43,7 +43,9 @@
 
 ## ADR-014 TAZ Derivation
 
-- [x] OMX zone ids must match TAZ/polygon ids: **strict** (Option A)
+- [x] OMX zone ids must match TAZ/polygon ids: **strict** (Option A fallback)
+- [x] **SQLite `CONNECTOR` path primary** when present (`visum_zones.py`; amended 2026-06-22)
+- [x] v1 TAZ edge weights: **uniform** — see `specs/assumptions/demand-taz-weighting-v1.md`
 - [x] Polygon source layer name convention: **`zones`** (override via `?layer=` / build_options)
 - [x] Fuzzy centroid-in-polygon matching: **deferred v2**
 

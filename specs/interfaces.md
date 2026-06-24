@@ -16,19 +16,19 @@ Status: `upstream` (existing SUMO), `partial` (exists but incomplete for MVP), `
 
 | Shapes / additional | `.poly.xml` | polyconvert | sumo-gui | upstream | POIs, polygons |
 
-| TAZ definitions | `tazs` XML | netedit, edgesInDistricts.py | od2trips | upstream | Required for OD demand |
+| TAZ definitions | `tazs` XML | netedit, edgesInDistricts.py, **VISUM CONNECTOR adapter** | od2trips | **partial** | Polygon path upstream; SQLite `CONNECTOR` → `tazs.xml` (`normalize/visum_zones.py`) |
 
-| OD relations | `tazRelation` XML | netedit, route2OD.py, **OMX adapter** | od2trips, routeSampler | partial | OMX path is **gap** |
+| OD relations | `tazRelation` XML | netedit, route2OD.py, **OMX adapter** | od2trips, routeSampler | **partial** | Named-mapping OMX → `tazRelation` (`tools/import/gis/omx/`) |
 
 | Trips | `.trips.xml` | od2trips, randomTrips.py | duarouter | upstream | |
 
-| Routes | `.rou.xml` | duarouter | sumo | upstream | |
+| Routes | `.rou.xml` | duarouter, **duaIterate** (`orchestrate/assignment.py`) | sumo | upstream / **partial** | Runnable workspace: `assignment/routes.xml`; vTypes required at assignment |
 
 | SUMO config | `.sumocfg` | API orchestrator | sumo | partial | osmWebWizard generates via `sumo --save-configuration`; API wrapper **gap** |
 
 | GDAL vector layer | GPKG/GeoJSON/SHP | External GIS | polyconvert; netconvert (lines) | upstream | GPKG via GDAL **unverified** |
 
-| OMX matrix | `.omx` | **OMX adapter** → tazRelation | **partial** | `tools/import/gis/omx/` (ADR-012) |
+| OMX matrix | `.omx` | **OMX adapter** → tazRelation | **partial** | `tools/import/gis/omx/` + `orchestrate/demand.py` (Car/HVG v1; PUT skipped) |
 
 | SQLite spatial | SpatiaLite / tables | External | API normalization (ADR-013) | **partial** | SpatiaLite + attribute joins; schema introspection. VISUM-relational network import implemented: `tools/import/gis/normalize/visum_sqlite.py` → plain XML → netconvert (`network-import-sqlite`) |
 
@@ -234,6 +234,9 @@ sequenceDiagram
 | 2026-06-15 | R2: Tier A ADR-001–007 Accepted; context extraction archived → `specs/archive/context-extraction.md`; gaps G-1–G-8 → Tier B workshop |
 | 2026-06-16 | Tier B workshop: ADR-008–015 Accepted; HTTP REST row; SQLite `partial`; simulation v1 subprocess + local FS; fuzzy TAZ join deferred v2 |
 | 2026-06-16 | gis-api-mvp apply: HTTP + OMX adapter `partial`; implementation under `tools/import/gis/` |
-| 2026-06-18 | import-network-sqlite apply: VISUM SQLite → net.xml normalizer (`normalize/visum_sqlite.py`, `modes.py`, `speed.py`; `orchestrate/netbuild.py`); SQLite row enriched; per-mode LINKTYPE speeds + restrictions; real Karlsruhe normalization verified (8432 nodes / 19401 edges / 0 zero-speed); netconvert smoke via eclipse-sumo 1.27.0 (`test_real_karlsruhe_build_loads`, 23/23 tests) |
+| 2026-06-22 | `import-network-sqlite` archived → `openspec/specs/network-import-sqlite/spec.md`; capability: VISUM `NODE`/`LINK`/`LINKTYPE` → `net.xml` (zones/connectors deferred) |
+| 2026-06-22 | ADR-014 amended: SQLite `CONNECTOR` → incident net edges primary; polygon/`edgesInDistricts` fallback; v1 uniform weights per `demand-taz-weighting-v1.md` |
+| 2026-06-22 | OMX adapter contract: `import-od-demand` supersedes `gis-api-mvp` `omx-adapter` skeleton (named `NO` mapping, interval id = vType, per-core od2trips) — see ADR-012 amendment |
+| 2026-06-23 | `demand-assignment` apply: `build_runnable_scenario()` (`orchestrate/scenario.py`) — OMX + SQLite + `net.xml` → demand + assignment + `build-manifest.json`; CLI `python -m gis.cli.build_scenario` — **unverified** |
 
 

@@ -17,7 +17,7 @@
 | ADR-011 | GIS Normalization Layer | [ADR-011-gis-normalization.md](adrs/ADR-011-gis-normalization.md) | B | **Accepted** | GPKG path unverified |
 | ADR-012 | OMX Adapter | [ADR-012-omx-adapter.md](adrs/ADR-012-omx-adapter.md) | B | **Accepted** | — |
 | ADR-013 | SQLite Role | [ADR-013-sqlite-role.md](adrs/ADR-013-sqlite-role.md) | B | **Accepted** | — |
-| ADR-014 | TAZ Derivation | [ADR-014-taz-derivation.md](adrs/ADR-014-taz-derivation.md) | B | **Accepted** | Fuzzy join → v2 |
+| ADR-014 | TAZ Derivation | [ADR-014-taz-derivation.md](adrs/ADR-014-taz-derivation.md) | B | **Accepted** | Polygon fallback unverified; fuzzy join → v2 |
 | ADR-015 | Simulation Execution | [ADR-015-simulation-execution.md](adrs/ADR-015-simulation-execution.md) | B | **Accepted** | TraCI/libsumo → v2 |
 
 ## Conventions
