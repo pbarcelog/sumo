@@ -238,5 +238,6 @@ sequenceDiagram
 | 2026-06-22 | ADR-014 amended: SQLite `CONNECTOR` → incident net edges primary; polygon/`edgesInDistricts` fallback; v1 uniform weights per `demand-taz-weighting-v1.md` |
 | 2026-06-22 | OMX adapter contract: `import-od-demand` supersedes `gis-api-mvp` `omx-adapter` skeleton (named `NO` mapping, interval id = vType, per-core od2trips) — see ADR-012 amendment |
 | 2026-06-23 | `demand-assignment` apply: `build_runnable_scenario()` (`orchestrate/scenario.py`) — OMX + SQLite + `net.xml` → demand + assignment + `build-manifest.json`; CLI `python -m gis.cli.build_scenario` — **unverified** |
+| 2026-06-25 | `demand-assignment` archived → `openspec/specs/demand-assignment/spec.md`; `scenario-orchestration` updated (VISUM path, `duaIterate` default, manifest invalidation); `assignment.py` stages vTypes for `duaIterate` (no duplicate on iteration 1+) |
 
 

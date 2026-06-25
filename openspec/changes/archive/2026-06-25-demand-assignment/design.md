@@ -158,7 +158,11 @@ flowchart LR
 3. Remove/deprecate local `build_routes.py` helper after CLI works.
 4. Update `specs/interfaces.md` and `specs/coverage.md` during apply/archive.
 
+**Archive gate (2026-06-25):** Karlsruhe 1 h `duaIterate` smoke → non-empty `assignment/routes.xml`.
+Full-day `duarouter`, full-scale `duaIterate`, and `sumo-gui` on the large model are **deferred
+non-blocking** (smaller reference network later).
+
 ## Open Questions
 
-- **Iterations default for Karlsruhe:** start with `2` in spec; tune after first successful smoke.
+- **Iterations default for Karlsruhe:** `2` validated on 1 h subset; tune on smaller full-day model when available.
 - **Trip sampling for dev smoke:** optional `--max-trips` flag deferred unless first run is impractical.

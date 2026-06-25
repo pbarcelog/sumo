@@ -94,9 +94,9 @@ SUMO tool versions, and timestamps. PRD §4 (traceability).
 
 ### Requirement: Rebuild routes when the network revision changes
 
-On a subsequent build against an existing workspace, when OMX and SQLite hashes are unchanged but
-`net.xml` hash differs, the orchestrator SHALL reuse existing trip files and re-run assignment only
-(full route rebuild). PRD §4 (determinism); team decision (v1 invalidation scope).
+The orchestrator SHALL on a subsequent build against an existing workspace, when OMX and SQLite hashes
+are unchanged but `net.xml` hash differs, reuse existing trip files and re-run assignment only (full
+route rebuild). PRD §4 (determinism); team decision (v1 invalidation scope).
 
 #### Scenario: Net-only change triggers assignment rebuild
 
@@ -134,8 +134,10 @@ When `emit_sumocfg` is enabled, the orchestrator SHALL write `sim/<scenario_id>.
 ### Requirement: Validate Karlsruhe reference data end-to-end
 
 The capability SHALL be verified against the real `Visum_3_modes.omx`, `Karlsruhe-sqlite.sqlite3`, and
-`import-network-sqlite` `net.xml`, producing a non-empty `routes.xml`. Team decision (first microsim
-gate).
+`import-network-sqlite` `net.xml`, producing a non-empty `routes.xml`. Team decision (reference smoke
+gate). Full-day demand volume and `sumo-gui` acceptance on the large Karlsruhe model are deferred
+non-blocking until a smaller reference network exists (2026-06-25); a time-windowed subset (e.g. 1 h
+`duaIterate`) satisfies this requirement for archive.
 
 #### Scenario: Karlsruhe assignment smoke
 

@@ -13,10 +13,13 @@ Reconciliation summary: [reconciliation-r2.md](reconciliation-r2.md).
 |---|---|
 | **Mode** | Implementation (in progress) |
 | **Branch** | `feature/importPoC` |
-| **Change** | `demand-assignment` — VISUM demand + route assignment productized (`build_runnable_scenario`, CLI, manifest invalidation) |
-| **Next** | Karlsruhe vClass-correct `assignment/routes.xml`; archive `demand-assignment`; then `import-network-geojson` or `gis-api-mvp` archive |
-| **Blockers** | Karlsruhe full `duarouter` run ~1 h; `duaIterate` at full scale unbenchmarked |
-| **Last completed** | `import-od-demand` archived (2026-06-22); Karlsruhe microsim smoke to t=300 with manual `routes.xml` + `vtypes.add.xml` |
+| **Change** | Choose next: `gis-api-mvp` archive or `import-network-geojson` (spec-only) |
+| **Next** | Archive `gis-api-mvp` or propose/apply `import-network-geojson` |
+| **Blockers** | — |
+| **Last completed** | `demand-assignment` archived (2026-06-25) — VISUM demand + assignment (`build_runnable_scenario`, CLI, manifest, `duaIterate` default) |
+
+**Pending (non-blocking):** full-day Karlsruhe `duarouter`, full-scale `duaIterate`, and `sumo-gui`
+acceptance on the large reference model — revisit when a smaller network fixture exists.
 
 **Future ideas (not current focus):** [`specs/future/`](future/README.md) — icebox backlog (e.g. PuT demand scenarios 3–4).
 

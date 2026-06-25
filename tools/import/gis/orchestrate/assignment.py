@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import gzip
 import os
 import shutil
 import xml.etree.ElementTree as ET
@@ -67,6 +68,68 @@ def _vtypes_relative(vtypes: Path, cwd: Path) -> str:
     return _sumo_path(vtypes, cwd)
 
 
+def _parse_routes_file(source: Path) -> ET.ElementTree:
+    if source.name.endswith(".gz"):
+        with gzip.open(source, "rb") as fh:
+            return ET.parse(fh)
+    return ET.parse(source)
+
+
+def _vtypes_by_id(vtypes_xml: Path) -> dict[str, ET.Element]:
+    by_id: dict[str, ET.Element] = {}
+    for el in ET.parse(vtypes_xml).getroot():
+        if el.tag == "vType":
+            vid = el.get("id")
+            if vid:
+                by_id[vid] = el
+    return by_id
+
+
+def _stage_trips_for_dua_iterate(
+    trip_paths: dict[str, Path],
+    vtypes_xml: Path,
+    staging_dir: Path,
+) -> dict[str, Path]:
+    """Embed vType definitions in trip inputs for duaIterate step 0.
+
+    duaIterate forwards ``duarouter--*`` options to every duarouter call. Passing
+    ``--additional-files`` with vTypes would duplicate definitions on iteration 1+
+    when route files from the previous step already embed the same vType ids.
+    """
+    vtypes = _vtypes_by_id(vtypes_xml)
+    staging_dir.mkdir(parents=True, exist_ok=True)
+    staged: dict[str, Path] = {}
+    for vtype_id, trip_path in trip_paths.items():
+        vtype_el = vtypes.get(vtype_id)
+        if vtype_el is None:
+            raise AssignmentError(f"vType {vtype_id!r} not found in {vtypes_xml}")
+        dest = staging_dir / f"{trip_path.stem}.dua.xml"
+        vtype_xml = ET.tostring(vtype_el, encoding="unicode").strip()
+        with dest.open("w", encoding="utf-8", newline="\n") as out:
+            out.write('<?xml version="1.0" encoding="UTF-8"?>\n<routes>\n')
+            out.write(f"    {vtype_xml}\n")
+            for _event, el in ET.iterparse(trip_path, events=("end",)):
+                if el.tag != "trip":
+                    el.clear()
+                    continue
+                attrs = " ".join(f'{key}="{value}"' for key, value in el.attrib.items())
+                out.write(f'    <trip {attrs}/>\n')
+                el.clear()
+            out.write("</routes>\n")
+        staged[vtype_id] = dest
+    return staged
+
+
+def _resolve_dua_iterate_route(step_dir: Path, stem: str, step: int) -> Path:
+    plain = step_dir / f"{stem}_{step:03d}.rou.xml"
+    gz = step_dir / f"{stem}_{step:03d}.rou.xml.gz"
+    if gz.is_file():
+        return gz
+    if plain.is_file():
+        return plain
+    raise AssignmentError(f"duaIterate route output missing: {plain} (.gz)")
+
+
 def _merge_route_files(sources: list[Path], dest: Path) -> None:
     root = ET.Element(
         "routes",
@@ -77,7 +140,7 @@ def _merge_route_files(sources: list[Path], dest: Path) -> None:
     )
     seen_vtypes: set[str] = set()
     for source in sources:
-        tree = ET.parse(source)
+        tree = _parse_routes_file(source)
         for child in tree.getroot():
             if child.tag == "vType":
                 vid = child.get("id")
@@ -97,11 +160,7 @@ def _dua_iterate_output_routes(assignment_dir: Path, trip_paths: dict[str, Path]
         raise AssignmentError(f"duaIterate output directory missing: {step_dir}")
     outputs: list[Path] = []
     for trip in trip_paths.values():
-        stem = trip.stem
-        candidate = step_dir / f"{stem}_{last_step:03d}.rou.xml"
-        if not candidate.is_file():
-            raise AssignmentError(f"duaIterate route output missing: {candidate}")
-        outputs.append(candidate)
+        outputs.append(_resolve_dua_iterate_route(step_dir, trip.stem, last_step))
     return outputs
 
 
@@ -121,10 +180,10 @@ def run_assignment(
     if not trip_paths:
         raise AssignmentError("no trip files to assign")
 
-    trip_arg = trip_files_arg_relative(trip_paths, assignment_dir)
     vtypes_rel = _vtypes_relative(vtypes_xml, assignment_dir)
 
     if options.method == AssignmentMethod.DUAROUTER:
+        trip_arg = trip_files_arg_relative(trip_paths, assignment_dir)
         net_rel = _sumo_path(net_xml, assignment_dir)
         code = save_and_run(
             "duarouter",
@@ -154,8 +213,13 @@ def run_assignment(
             f"duaIterate.py not found at {script}; set SUMO_HOME to the SUMO installation"
         )
 
+    staged_trips = _stage_trips_for_dua_iterate(
+        trip_paths,
+        vtypes_xml,
+        assignment_dir / "staging",
+    )
     net_rel = _sumo_path(net_xml, assignment_dir)
-    trip_rel = trip_files_arg_relative(trip_paths, assignment_dir)
+    trip_rel = trip_files_arg_relative(staged_trips, assignment_dir)
     last_step = max(options.iterations, 1)
     dua_args = [
         "-n", net_rel,
@@ -166,14 +230,13 @@ def run_assignment(
         "-e", str(options.end),
         "--log", log_path.name,
         "--dualog", "duaIterate.dualog",
-        f"duarouter--additional-files={vtypes_rel}",
     ]
     code = run_python_tool(script, dua_args, assignment_dir, log_path)
     if code != 0:
         raise AssignmentError(f"duaIterate exited with code {code}; see {log_path}")
 
     last_iter = last_step - 1
-    route_parts = _dua_iterate_output_routes(assignment_dir, trip_paths, last_iter)
+    route_parts = _dua_iterate_output_routes(assignment_dir, staged_trips, last_iter)
     _merge_route_files(route_parts, routes_path)
     return AssignmentResult(
         routes_path=routes_path,

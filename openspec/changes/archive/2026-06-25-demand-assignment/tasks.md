@@ -44,15 +44,25 @@ Spec-first pass: every box below is intentionally unchecked until `/sumo-apply`.
   `assignment/routes.xml`.
 - [x] 5.3 Invalidation test: mutate net copy → assignment-only rebuild reuses trips.
 
-## 6. Karlsruhe first sim (manual acceptance)
+## 6. Karlsruhe reference acceptance
 
-- [ ] 6.1 Run CLI against `c:\tmp\karlsruhe\` (or regenerate workspace) until `assignment/routes.xml`
-  exists.
-- [ ] 6.2 Launch `sumo-gui -c c:\tmp\karlsruhe\sim\karlsruhe.sumocfg` — confirm sim starts at
-  breakpoint 1800s without immediate mass teleport (note counts in session log).
+**Change gate (done):** real Karlsruhe inputs → non-empty `assignment/routes.xml` at a scale suitable
+for CI and local smoke. **Not a merge gate:** full-day volume or `sumo-gui` on the full model — deferred
+until a smaller reference network exists (team decision 2026-06-25).
+
+- [x] 6.1 Produce `assignment/routes.xml` on real Karlsruhe OMX + SQLite + `net.xml` via the
+  productized assignment path. **Evidence (2026-06-25):** `reachable_trips` demand rebuild;
+  1 h window (`begin=0`, `end=3600`), sorted departures; `duaIterate` iterations 0–1 completed;
+  `c:\tmp\karlsruhe\assignment\routes.xml` (~25.8 MB, exit 0). Log:
+  `assignment/rebuild-and-duaIterate.log`, `assignment/duaIterate-1h-sorted.log`.
+- [ ] 6.2 **Deferred (non-blocking)** — full-day `duarouter` on Karlsruhe (~828k trips, ~1 h).
+- [ ] 6.3 **Deferred (non-blocking)** — full-scale `duaIterate` on daily demand (unbenchmarked).
+- [ ] 6.4 **Deferred (non-blocking)** — `sumo-gui` smoke on Karlsruhe (`sumocfg` + automated
+  `assignment/routes.xml`); prior manual smoke used `sim/routes.xml` only.
 
 ## 7. Spec hygiene (before archive)
 
 - [x] 7.1 Update `specs/interfaces.md` with `build_runnable_scenario` contract (`unverified`).
 - [x] 7.2 Update `specs/coverage.md` § Current focus — `demand-assignment` apply/complete.
-- [ ] 7.3 Run `/check-spec demand-assignment` — resolve Blockers.
+- [x] 7.3 Run `/check-spec demand-assignment` — resolve Blockers. **Audit 2026-06-25:** no Blockers;
+  openspec validate fixed (requirement SHALL wording); see session notes below.
