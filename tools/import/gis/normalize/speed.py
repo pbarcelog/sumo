@@ -130,3 +130,83 @@ def resolve_edge_speed(
         restrictions_kmh=restrictions,
         coherence_warning=coherence_warning,
     )
+
+
+# --- GeoJSON path (import-network-geojson data-inventory.md section 5) ---
+
+DEFAULT_LC_FALLBACK_KMH: dict[str, float] = {
+    "MAJOR": 70.0,
+    "IN-URBAN": 50.0,
+    "COLLECTOR": 50.0,
+    "RAMP": 50.0,
+    "PUT": 50.0,
+}
+DEFAULT_UNMAPPED_LC_FALLBACK_KMH = 50.0
+
+
+@dataclass
+class GeoJsonSpeedResolution:
+    """Speed resolved from GeoJSON ``V0PRT`` and ``LC`` fallback."""
+
+    speed_ms: float
+    speed_kmh: float
+    substituted: bool = False
+    lc: str = ""
+    link_no: str = ""
+
+
+def parse_v0prt_kmh(value: object) -> float | None:
+    """Parse VISUM GeoJSON ``V0PRT`` strings such as ``\"30km/h\"`` to km/h."""
+    if value is None:
+        return None
+    text = str(value).strip().lower()
+    if not text:
+        return None
+    if text.endswith("km/h"):
+        text = text[:-4].strip()
+    try:
+        number = float(text)
+    except ValueError:
+        return None
+    return number
+
+
+def lc_fallback_kmh(
+    lc: object,
+    fallbacks: Mapping[str, float] | None = None,
+) -> float:
+    """Return the configured fallback speed (km/h) for a link class."""
+    table = DEFAULT_LC_FALLBACK_KMH if fallbacks is None else {
+        str(k).upper(): float(v) for k, v in fallbacks.items()
+    }
+    key = str(lc or "").strip().upper()
+    return table.get(key, DEFAULT_UNMAPPED_LC_FALLBACK_KMH)
+
+
+def resolve_geojson_edge_speed(
+    v0prt: object,
+    lc: object,
+    link_no: object,
+    *,
+    lc_fallbacks: Mapping[str, float] | None = None,
+) -> GeoJsonSpeedResolution:
+    """Resolve edge speed from ``V0PRT`` when positive, else ``LC`` fallback."""
+    parsed = parse_v0prt_kmh(v0prt)
+    link_id = str(link_no)
+    lc_text = str(lc or "").strip()
+    if parsed is not None and parsed > 0:
+        return GeoJsonSpeedResolution(
+            speed_ms=parsed * KMH_TO_MS,
+            speed_kmh=parsed,
+            substituted=False,
+            lc=lc_text,
+            link_no=link_id,
+        )
+    fallback = lc_fallback_kmh(lc, lc_fallbacks)
+    return GeoJsonSpeedResolution(
+        speed_ms=fallback * KMH_TO_MS,
+        speed_kmh=fallback,
+        substituted=True,
+        lc=lc_text,
+        link_no=link_id,
+    )

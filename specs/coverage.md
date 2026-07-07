@@ -11,12 +11,12 @@ Reconciliation summary: [reconciliation-r2.md](reconciliation-r2.md).
 
 | Field | Value |
 |---|---|
-| **Mode** | Implementation (in progress) |
+| **Mode** | Idle — pick next epic |
 | **Branch** | `feature/importPoC` |
-| **Change** | Choose next: `gis-api-mvp` archive or `import-network-geojson` (spec-only) |
-| **Next** | Archive `gis-api-mvp` or propose/apply `import-network-geojson` |
+| **Change** | — |
+| **Next** | Wire GeoJSON demand into `build_runnable_scenario()` or propose next slice (e.g. control plans) |
 | **Blockers** | — |
-| **Last completed** | `demand-assignment` archived (2026-06-25) — VISUM demand + assignment (`build_runnable_scenario`, CLI, manifest, `duaIterate` default) |
+| **Last completed** | `import-od-demand-geojson` archived (2026-06-26) → `openspec/specs/od-import-demand-geojson/spec.md` |
 
 **Pending (non-blocking):** full-day Karlsruhe `duarouter`, full-scale `duaIterate`, and `sumo-gui`
 acceptance on the large reference model — revisit when a smaller network fixture exists.

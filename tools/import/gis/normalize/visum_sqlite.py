@@ -24,11 +24,11 @@ from .modes import DEFAULT_MODE_MAPPING, map_tsysset
 from .speed import DEFAULT_LOW_SPEED_THRESHOLD_KMH, resolve_edge_speed
 
 REQUIRED_TABLES = {"NETWORK", "NODE", "LINK", "LINKTYPE", "TSYS"}
-OPTIONAL_TABLES = {"LINKPOLY", "MODE", "ZONE", "CONNECTOR"}
+OPTIONAL_TABLES = {"LINKPOLY", "MODE", "ZONE", "CONNECTOR", "TURN"}
 DEFERRED_TABLES = {
     "STOP", "STOPPOINT", "STOPAREA", "LINE", "LINEROUTE", "LINEROUTEITEM",
     "TIMEPROFILE", "TIMEPROFILEITEM", "VEHJOURNEY", "VEHJOURNEYITEM",
-    "TURN", "LANETURN", "FARESYSTEM", "FAREMODEL", "SIGNALCONTROL",
+    "LANETURN", "FARESYSTEM", "FAREMODEL", "SIGNALCONTROL",
 }
 
 DEFAULT_TARGET_EPSG = "EPSG:25832"
@@ -83,6 +83,7 @@ class NormalizedNetwork:
     skipped_directions: list[str] = field(default_factory=list)
     unmapped_tokens: dict[str, int] = field(default_factory=dict)
     coherence_warnings: list[str] = field(default_factory=list)
+    speed_substitutions: list = field(default_factory=list)
     messages: list[str] = field(default_factory=list)
 
     def record(self, message: str) -> None:

@@ -7,7 +7,8 @@ This is the **review gate** for the change: field semantics and translation rule
 agreed here before the spec scenarios and implementation. It mirrors AequilibraE's
 `field_inventory.md` / `mapping_contract.md` — same VISUM source, different target (SUMO microsim).
 
-> **Status: DRAFT — needs review.** Items flagged **(confirm)** are decisions for the modeller.
+> **Status: SIGNED OFF (2026-06-25).** Modeller decisions recorded in §11; aligned with
+> `import-network-sqlite` Karlsruhe sign-off where the source semantics match.
 
 ---
 
@@ -64,7 +65,7 @@ Geometry: `LineString`, WGS84 lon/lat with z=0 (z dropped). Each row carries an 
 
 ---
 
-## 4. Mode → `vClass` mapping  **(confirm)**
+## 4. Mode → `vClass` mapping  **(resolved — §11)**
 
 `TSYSSET` is a comma list of VISUM transport systems. Each token maps to a SUMO `vClass`:
 
@@ -75,27 +76,25 @@ Geometry: `LineString`, WGS84 lon/lat with z=0 (z dropped). Each row carries an 
 | `BIKE` | `bicycle` | |
 | `BUS` | `bus` | |
 | `TRAM` | `tram` | (`lightrail` is deprecated → `tram`) |
-| `TRAIN` | `rail` | heavy/regional rail; **(confirm)** `rail` vs `rail_urban` for S-Bahn |
+| `TRAIN` | `rail_urban` | **resolved:** same as SQLite import — urban microsim target |
 | `PUTW` | `pedestrian` | "PuT walk" access/egress links |
+| `WALK` | `pedestrian` | alias for walk links |
 
 `allow` for an edge = the set of `vClass` mapped from its directional `TSYSSET`. Setting `allow`
 explicitly means every unlisted class is disallowed — so PuT-only links automatically exclude
 `passenger`/`truck` with **no epsilon-speed hack**.
 
-**Open question (confirm):** segregated rail/tram. SUMO best practice models physically separated
-tram/rail as **separate parallel edges** rather than a restricted lane on the road edge. In a VISUM
-export each TSys link is already its own geometry/row, so the default here is **one SUMO edge per
-VISUM link row** (separate edges naturally) — no lane-level `allow` splitting in v1. Confirm this is
-acceptable, or whether shared-corridor links should be merged.
+**Resolved:** one SUMO edge per VISUM link row (separate edges for segregated tram/rail); no
+lane-level `allow` splitting in v1.
 
 ---
 
-## 5. Speed rule  **(confirm fallback values)**
+## 5. Speed rule  **(resolved — §11)**
 
 - Convert `V0PRT` `"<n>km/h"` → `n / 3.6` m/s.
 - If `V0PRT > 0` → use it.
 - If `V0PRT = 0` (PuT-only link) → **fallback by `LC`** (since the PuT speed is not in the GeoJSON
-  export; `import-network-sqlite` may supply the real value later). Proposed defaults **(confirm)**:
+  export; `import-network-sqlite` may supply the real value later). Defaults:
 
 | `LC` | Fallback speed |
 |---|---|
@@ -108,8 +107,7 @@ acceptable, or whether shared-corridor links should be merged.
 
 - Every speed substitution is written to the build log (source link `NO`, `LC`, applied speed) for
   PRD §4 traceability.
-- Note: very low real speeds exist (`2km/h`×1952, `3`,`5km/h`) — these are kept as-is (likely
-  walk/bike/connector-like links); **(confirm)** we do not floor them.
+- Very low real speeds (`2km/h`×1952, `3`,`5km/h`) are kept as-is — **no floor** (§11).
 
 ---
 
@@ -124,7 +122,8 @@ acceptable, or whether shared-corridor links should be merged.
 ## 7. CRS rule
 
 - Input geometry: EPSG:4326 (WGS84 degrees).
-- `netconvert --proj.utm` auto-selects the UTM zone (EPSG:25832 for Karlsruhe) → meters.
+- `netconvert --proj.utm` auto-selects the UTM zone (EPSG:32632 — WGS84 UTM 32N for the Karlsruhe
+  reference export) → meters.
 - Resolved EPSG and projection parameters are logged; no silent reprojection (config CRS rule).
 
 ---
@@ -142,7 +141,7 @@ Fixtures encode each rule above so unit tests don't need the 12 MB real files:
 
 - bidirectional car link (`BIKE,CAR,HGV`, real speed) → two edges, `allow` includes passenger.
 - one-way link (empty `R_TSYSSET`) → single AB edge.
-- **PuT-only link** (`BUS,TRAIN,TRAM`, `V0PRT=0`) → edge with `allow="bus rail tram"`, fallback speed, **no passenger**.
+- **PuT-only link** (`BUS,TRAIN,TRAM`, `V0PRT=0`) → edge with `allow="bus rail_urban tram"`, fallback speed, **no passenger**.
 - mixed `LC` values → edge-type assignment.
 - multi-vertex geometry + duplicate coordinate → geometry preserved / diagnostic.
 - non-WGS84 / missing CRS input → explicit error (fail loud).
@@ -150,3 +149,48 @@ Fixtures encode each rule above so unit tests don't need the 12 MB real files:
 Real-file smoke (separate, opt-in): import the actual `node.geojson` + `link.geojson`, assert
 counts in range, **zero 0-speed edges**, PuT-only edges disallow `passenger`, and `netconvert`/`sumo`
 load the produced `net.xml` without error.
+
+---
+
+## 10. Expected Karlsruhe build counts (real-file smoke)
+
+| Metric | Expected value |
+|---|---|
+| Node features | 8,432 |
+| Link features | 11,745 |
+| SUMO edges emitted | 19,401 (AB: 9,725 + BA: 9,676) |
+| Skipped directions (empty `TSYSSET`) | 4,089 (AB: 2,020 + BA: 2,069) |
+| Links with both directions empty | 843 |
+| Speed substitutions (`V0PRT=0`) | 525 link rows × up to 2 directions |
+| Resolved projection | EPSG:32632 (WGS84 UTM zone 32N via `--proj.utm`) |
+
+Sample PuT-only link for permission checks: `NO=3118` → edges `3118`/`-3118` with
+`allow="bus rail_urban tram"`, no `passenger`.
+
+---
+
+## 11. Modeller sign-off (2026-06-25)
+
+| Decision | Resolution |
+|---|---|
+| `TRAIN → rail` vs `rail_urban` | **`rail_urban`** — consistent with `import-network-sqlite`; urban microsim target |
+| Separate-edge vs shared-lane | **Separate edge per VISUM row** — no lane-level splitting in v1 |
+| `LC` fallback table (§5) | **Accepted** as listed; logged on every substitution |
+| Low-speed floor (`2km/h` etc.) | **No floor** — keep parsed `V0PRT` when > 0 |
+| CRS | **WGS84 in**; fail loud if CRS cannot be established; `--proj.utm` for build |
+
+---
+
+## 12. Real-file smoke results (2026-06-25)
+
+| Check | Result |
+|---|---|
+| Nodes | 8,432 |
+| Edges emitted | 19,401 |
+| Skipped directions | 4,089 |
+| Speed substitutions logged | 724 |
+| `net.xml` edges | 19,401 |
+| Zero-speed edges | **0** |
+| Resolved EPSG | **EPSG:32632** |
+| `NO=3118` PuT-only | `allow` excludes `passenger`; speed 13.89 m/s (50 km/h fallback) |
+| `sumolib.net.readNet` | loads without error |

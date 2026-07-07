@@ -134,3 +134,43 @@ def create_sqlite(
     finally:
         conn.close()
     return path
+
+
+def create_turn_sqlite(path: str | Path) -> Path:
+    """Four-leg junction at node 2 with selective turns (no U-turn from 1)."""
+    path = create_sqlite(
+        path,
+        nodes={1: (934000.0, 6266000.0), 2: (934500.0, 6266100.0),
+               3: (935000.0, 6266300.0), 4: (934500.0, 6266400.0)},
+        links=[
+            (100, 1, 2, "BIKE,CAR,HGV", 1, 2, 50.0),
+            (100, 2, 1, "BIKE,CAR,HGV", 1, 2, 50.0),
+            (200, 3, 2, "BIKE,CAR,HGV", 1, 1, 50.0),
+            (200, 2, 3, "BIKE,CAR,HGV", 1, 1, 50.0),
+            (400, 2, 4, "BIKE,CAR,HGV", 1, 1, 50.0),
+            (400, 4, 2, "BIKE,CAR,HGV", 1, 1, 50.0),
+        ],
+        linkpolys=[],
+        include_tables=("NETWORK", "NODE", "LINK", "LINKTYPE", "TSYS"),
+    )
+    conn = sqlite3.connect(path)
+    try:
+        conn.execute(
+            "CREATE TABLE TURN (FROMNODENO INTEGER, VIANODENO INTEGER, TONODENO INTEGER, TSYSSET TEXT)"
+        )
+        conn.executemany(
+            "INSERT INTO TURN VALUES (?, ?, ?, ?)",
+            [
+                (1, 2, 3, "BIKE,CAR,HGV"),
+                (1, 2, 4, "BIKE,CAR,HGV"),
+                (3, 2, 1, "BIKE,CAR,HGV"),
+                (3, 2, 4, "BIKE,CAR,HGV"),
+                (4, 2, 1, "BIKE,CAR,HGV"),
+                (4, 2, 3, "BIKE,CAR,HGV"),
+                (1, 2, 1, ""),  # filtered: empty TSYSSET U-turn
+            ],
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    return path

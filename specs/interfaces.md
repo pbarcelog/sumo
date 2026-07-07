@@ -16,7 +16,7 @@ Status: `upstream` (existing SUMO), `partial` (exists but incomplete for MVP), `
 
 | Shapes / additional | `.poly.xml` | polyconvert | sumo-gui | upstream | POIs, polygons |
 
-| TAZ definitions | `tazs` XML | netedit, edgesInDistricts.py, **VISUM CONNECTOR adapter** | od2trips | **partial** | Polygon path upstream; SQLite `CONNECTOR` → `tazs.xml` (`normalize/visum_zones.py`) |
+| TAZ definitions | `tazs` XML | netedit, edgesInDistricts.py, **VISUM CONNECTOR adapter** | od2trips | **partial** | Polygon path upstream; SQLite or GeoJSON `CONNECTOR` → `tazs.xml` (`normalize/visum_zones.py`, `visum_geojson_zones.py`) |
 
 | OD relations | `tazRelation` XML | netedit, route2OD.py, **OMX adapter** | od2trips, routeSampler | **partial** | Named-mapping OMX → `tazRelation` (`tools/import/gis/omx/`) |
 
@@ -30,7 +30,11 @@ Status: `upstream` (existing SUMO), `partial` (exists but incomplete for MVP), `
 
 | OMX matrix | `.omx` | **OMX adapter** → tazRelation | **partial** | `tools/import/gis/omx/` + `orchestrate/demand.py` (Car/HVG v1; PUT skipped) |
 
-| SQLite spatial | SpatiaLite / tables | External | API normalization (ADR-013) | **partial** | SpatiaLite + attribute joins; schema introspection. VISUM-relational network import implemented: `tools/import/gis/normalize/visum_sqlite.py` → plain XML → netconvert (`network-import-sqlite`) |
+| SQLite spatial | SpatiaLite / tables | External | API normalization (ADR-013) | **partial** | SpatiaLite + attribute joins; schema introspection. VISUM-relational network: `normalize/visum_sqlite.py` → plain XML → netconvert (`network-import-sqlite`) |
+
+| VISUM GeoJSON network | `node.geojson` + `link.geojson` | `normalize/visum_geojson.py` | netconvert | **partial** | `build_network_from_geojson()` → `net.xml` (`network-import`, archived 2026-06-25) |
+
+| VISUM GeoJSON demand | OMX + `zone_centroid.geojson` + `connector.geojson` | `normalize/visum_geojson_zones.py`, `orchestrate/demand.py` | od2trips / reachable | **partial** | `build_demand_from_geojson()` → `tazs.xml` + `tazRelation.xml` (`od-import-demand-geojson`, archived 2026-06-26) |
 
 | Typemap | `.typ.xml` | `data/typemap/` | netconvert, polyconvert | upstream | Schema mapping |
 
@@ -46,7 +50,7 @@ Status: `upstream` (existing SUMO), `partial` (exists but incomplete for MVP), `
 
 | TraCI connection | TCP socket / libsumo / libtraci | `traci.start` / `traci.connect` | step loop, domain getters | upstream | Socket default; regression in `tests/complex/traci/`, `tests/traci/`; libsumo CI via `complex.libsumo`; fork Option D **unverified** (ADR-015) |
 
-| Fork integration tests | TextTest `*.tools` collateral | `tests/tools/import/gis/` runners | CI `-a tools` | **gap** | Harness contract IF-TEST-001; see `specs/test-strategy.md` |
+| Fork integration tests | TextTest `*.tools` collateral | `tests/tools/import/gis/` runners | CI `-a tools` | **partial** | Harness contract IF-TEST-001; pytest under `tests/tools/import/gis/network/` (SQLite + GeoJSON) |
 
 | HTTP REST API | JSON / multipart | `tools/import/gis/api/` | API clients | **partial** | FastAPI `/v1/scenarios` (ADR-010) |
 
@@ -238,6 +242,8 @@ sequenceDiagram
 | 2026-06-22 | ADR-014 amended: SQLite `CONNECTOR` → incident net edges primary; polygon/`edgesInDistricts` fallback; v1 uniform weights per `demand-taz-weighting-v1.md` |
 | 2026-06-22 | OMX adapter contract: `import-od-demand` supersedes `gis-api-mvp` `omx-adapter` skeleton (named `NO` mapping, interval id = vType, per-core od2trips) — see ADR-012 amendment |
 | 2026-06-23 | `demand-assignment` apply: `build_runnable_scenario()` (`orchestrate/scenario.py`) — OMX + SQLite + `net.xml` → demand + assignment + `build-manifest.json`; CLI `python -m gis.cli.build_scenario` — **unverified** |
-| 2026-06-25 | `demand-assignment` archived → `openspec/specs/demand-assignment/spec.md`; `scenario-orchestration` updated (VISUM path, `duaIterate` default, manifest invalidation); `assignment.py` stages vTypes for `duaIterate` (no duplicate on iteration 1+) |
+| 2026-06-25 | `import-network-geojson` archived → `openspec/specs/network-import/spec.md`; GeoJSON network pillar implemented |
+| 2026-06-25 | `import-network-geojson` applied: `build_network_from_geojson()` → `net.xml`; Karlsruhe opt-in smoke |
+| 2026-06-26 | `import-od-demand-geojson` archived → `openspec/specs/od-import-demand-geojson/spec.md`; GeoJSON demand pillar implemented |
 
 

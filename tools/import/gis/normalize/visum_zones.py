@@ -24,6 +24,23 @@ PRT_TSYS_TOKENS = frozenset({"CAR", "HGV", "BIKE", "WALK"})
 ConnectorRow = tuple[int, int, str, str]  # ZONENO, NODENO, DIRECTION, TSYSSET
 
 
+def _classify_put_only_zones(
+    zone_ids: set[str],
+    connectors: list[ConnectorRow],
+) -> set[str]:
+    put_only: set[str] = set()
+    for zone_id in zone_ids:
+        zone_connectors = [c for c in connectors if str(c[0]) == zone_id]
+        if not zone_connectors:
+            continue
+        if all(
+            not (set(split_tsysset(tsys)) & PRT_TSYS_TOKENS)
+            for _, _, _, tsys in zone_connectors
+        ):
+            put_only.add(zone_id)
+    return put_only
+
+
 class VisumZonesError(Exception):
     """Fail-loud demand / connector resolution error."""
 
@@ -65,20 +82,10 @@ def read_zone_connectors(sqlite_path: str | Path) -> ZoneConnectorTables:
     finally:
         conn.close()
 
-    put_only_zones: set[str] = set()
-    for zone_id in zone_ids:
-        zone_connectors = [c for c in connectors if str(c[0]) == zone_id]
-        if not zone_connectors:
-            continue
-        if all(
-            not (set(split_tsysset(tsys)) & PRT_TSYS_TOKENS)
-            for _, _, _, tsys in zone_connectors
-        ):
-            put_only_zones.add(zone_id)
     return ZoneConnectorTables(
         zone_ids=zone_ids,
         connectors=connectors,
-        put_only_zones=put_only_zones,
+        put_only_zones=_classify_put_only_zones(zone_ids, connectors),
     )
 
 
@@ -242,8 +249,8 @@ def write_tazs_xml(records: list[TazRecord], output_path: Path) -> None:
     output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def build_tazs_for_core(
-    sqlite_path: str | Path,
+def build_tazs_for_core_from_tables(
+    tables: ZoneConnectorTables,
     net_xml: str | Path,
     output_path: str | Path,
     *,
@@ -254,7 +261,6 @@ def build_tazs_for_core(
     zero_demand_zone_ids: set[str] | None = None,
 ) -> TazBuildResult:
     token = connector_token or DEFAULT_CORE_CONNECTOR_TOKEN[core]
-    tables = read_zone_connectors(sqlite_path)
     net = sumolib.net.readNet(str(net_xml))
     demand_totals = demand_totals or {}
     zero_demand_zone_ids = zero_demand_zone_ids or set()
@@ -279,4 +285,28 @@ def build_tazs_for_core(
         unmapped_tokens=unmapped,
         messages=messages,
         zone_access=zone_access,
+    )
+
+
+def build_tazs_for_core(
+    sqlite_path: str | Path,
+    net_xml: str | Path,
+    output_path: str | Path,
+    *,
+    core: str,
+    vtype: str,
+    connector_token: str | None = None,
+    demand_totals: dict[str, ZoneDemandTotals] | None = None,
+    zero_demand_zone_ids: set[str] | None = None,
+) -> TazBuildResult:
+    tables = read_zone_connectors(sqlite_path)
+    return build_tazs_for_core_from_tables(
+        tables,
+        net_xml,
+        output_path,
+        core=core,
+        vtype=vtype,
+        connector_token=connector_token,
+        demand_totals=demand_totals,
+        zero_demand_zone_ids=zero_demand_zone_ids,
     )

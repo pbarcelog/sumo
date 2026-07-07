@@ -50,7 +50,7 @@ later OD/GTFS phases).
 #### Scenario: PuT-only link excludes passenger
 
 - **WHEN** a link has `TSYSSET="BUS,TRAIN,TRAM"` and `V0PRT="0km/h"`
-- **THEN** the edge `allow` is `bus rail tram`, `passenger` is not permitted, and the edge speed is a
+- **THEN** the edge `allow` is `bus rail_urban tram`, `passenger` is not permitted, and the edge speed is a
   positive fallback value (not zero, not epsilon)
 
 ### Requirement: Directional split from R_ fields
@@ -86,7 +86,7 @@ PRD §4.
 #### Scenario: CRS resolved and logged
 
 - **WHEN** the network is built from WGS84 input
-- **THEN** the build report records the resolved projected EPSG (e.g. `25832`) used by netconvert
+- **THEN** the build report records the resolved projected EPSG (e.g. `32632`) used by netconvert
 
 ### Requirement: Build net.xml via netconvert
 

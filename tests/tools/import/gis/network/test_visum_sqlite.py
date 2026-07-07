@@ -22,9 +22,10 @@ from gis.normalize.visum_sqlite import (
     VisumSQLiteError,
     normalize_sqlite_network,
 )
+from gis.normalize.visum_turns import read_turn_connections
 from gis.orchestrate.netbuild import build_network_from_sqlite, write_plain_xml
 
-from .fixtures import SPHERE_MERCATOR_WKT, create_sqlite
+from .fixtures import SPHERE_MERCATOR_WKT, create_sqlite, create_turn_sqlite
 
 
 def _edges_by_id(network):
@@ -47,9 +48,10 @@ needs_netconvert = pytest.mark.skipif(
 # --- 5.1 discovery -------------------------------------------------------
 
 def test_discovery_reports_deferred_tables(tmp_path):
-    db = create_sqlite(tmp_path / "ok.sqlite3", extra_tables=("STOP", "LINE", "TURN"))
+    db = create_sqlite(tmp_path / "ok.sqlite3", extra_tables=("STOP", "LINE", "LANETURN"))
     network = normalize_sqlite_network(db)
-    assert {"STOP", "LINE", "TURN"}.issubset(set(network.deferred_tables))
+    assert {"STOP", "LINE", "LANETURN"}.issubset(set(network.deferred_tables))
+    assert "TURN" not in network.deferred_tables
 
 
 def test_discovery_missing_required_table_raises(tmp_path):
@@ -202,8 +204,6 @@ def test_missing_file_raises(tmp_path):
         normalize_sqlite_network(tmp_path / "does_not_exist.sqlite3")
 
 
-# --- plain XML emit (no netconvert needed) -------------------------------
-
 def test_write_plain_xml_emits_files(tmp_path):
     db = create_sqlite(tmp_path / "xml.sqlite3")
     network = normalize_sqlite_network(db)
@@ -225,7 +225,42 @@ def test_build_without_netconvert_stops_after_xml(tmp_path):
     assert (tmp_path / "out" / "net.nod.xml").exists()
 
 
+def test_turn_resolution_whitelist(tmp_path):
+    db = create_turn_sqlite(tmp_path / "turns.sqlite3")
+    network = normalize_sqlite_network(db)
+    turns = read_turn_connections(db, network.edges)
+    assert turns.turn_rows == 7
+    assert turns.turn_rows_imported == 6
+    assert turns.turn_rows_skipped == 1
+    pairs = {(c.from_edge, c.to_edge) for c in turns.connections}
+    assert ("100", "200") in pairs
+    assert ("100", "400") in pairs
+    assert ("100", "-100") not in pairs
+
+
+def test_build_without_netconvert_reports_turn_stats(tmp_path):
+    db = create_turn_sqlite(tmp_path / "turns.sqlite3")
+    out = tmp_path / "out"
+    result = build_network_from_sqlite(db, out, run_netconvert=False)
+    assert result.turn_connection_count > 0
+    assert result.turn_via_nodes == 1
+    assert (out / "net.turn-allowed.con.xml").exists()
+    assert not (out / "net.turn-patch.con.xml").exists()
+
+
 # --- 5.7 build (requires netconvert) -------------------------------------
+
+@needs_netconvert
+def test_turn_junction_blocks_uturn(tmp_path):
+    db = create_turn_sqlite(tmp_path / "turns.sqlite3")
+    result = build_network_from_sqlite(db, tmp_path / "out")
+    net = sumolib.net.readNet(str(result.net_xml_path))
+    edge_100 = net.getEdge("100")
+    outgoing_ids = {edge.getID() for edge in edge_100.getOutgoing().keys()}
+    assert "200" in outgoing_ids
+    assert "400" in outgoing_ids
+    assert "-100" not in outgoing_ids
+
 
 @needs_netconvert
 def test_build_produces_loadable_net(tmp_path):
@@ -261,6 +296,17 @@ def test_real_karlsruhe_normalization():
     # Sampled PuT-only link disallows passenger.
     put = [e for e in network.edges if e.edge_id in ("3118", "-3118")]
     assert put and all("passenger" not in e.allow for e in put)
+
+
+@needs_real_db
+def test_real_karlsruhe_turn_import():
+    network = normalize_sqlite_network(_REAL_DB)
+    turns = read_turn_connections(_REAL_DB, network.edges)
+    assert turns.turn_rows == 72812
+    assert turns.turn_rows_skipped == 24619
+    assert turns.turn_rows_imported == 48193
+    assert len(turns.connections) > 35000
+    assert len(turns.via_nodes) > 1000
 
 
 @needs_netconvert

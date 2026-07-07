@@ -10,9 +10,11 @@ from pathlib import Path
 from typing import Literal, Optional
 
 from gis.normalize.demand_totals import ZoneDemandTotals, zone_demand_totals_by_core
+from gis.normalize.visum_geojson_zones import read_zone_connectors_from_geojson
 from gis.normalize.visum_zones import (
     VisumZonesError,
-    build_tazs_for_core,
+    ZoneConnectorTables,
+    build_tazs_for_core_from_tables,
     read_zone_connectors,
 )
 from gis.omx.adapter import (
@@ -51,6 +53,7 @@ class DemandBuildResult:
     od2trips_returncodes: dict[str, int] = field(default_factory=dict)
     trip_counts: dict[str, int] = field(default_factory=dict)
     duarouter_returncode: Optional[int] = None
+    connector_skipped_directions: list[str] = field(default_factory=list)
 
 
 def demand_zones_by_core(
@@ -89,27 +92,26 @@ def _external_demand_zones(totals: dict[str, ZoneDemandTotals]) -> set[str]:
     return {zone_id for zone_id, t in totals.items() if t.has_external}
 
 
-def build_demand_from_visum(
-    omx_path: str | Path,
-    sqlite_path: str | Path,
-    net_xml: str | Path,
-    out_dir: str | Path,
-    options: Optional[DemandBuildOptions] = None,
+def _build_demand(
+    omx_path: Path,
+    net_xml: Path,
+    out_dir: Path,
+    tables: ZoneConnectorTables,
+    options: DemandBuildOptions,
+    *,
+    connector_skipped: list[str] | None = None,
 ) -> DemandBuildResult:
-    options = options or DemandBuildOptions()
-    out_dir = Path(out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    omx_path = Path(omx_path)
-    sqlite_path = Path(sqlite_path)
-    net_xml = Path(net_xml)
     net_local = out_dir / net_xml.name
     if net_xml.resolve() != net_local.resolve():
         shutil.copy2(net_xml, net_local)
     net_name = net_local.name
 
     result = DemandBuildResult()
-    tables = read_zone_connectors(sqlite_path)
+    if connector_skipped:
+        result.connector_skipped_directions = list(connector_skipped)
+        for item in connector_skipped:
+            result.messages.append(f"connector direction skipped: {item}")
+
     totals_by_core = zone_demand_totals_by_core(
         omx_path,
         options.cores,
@@ -133,8 +135,8 @@ def build_demand_from_visum(
         core_totals = totals_by_core.get(core, {})
 
         tazs_path = out_dir / f"tazs.{vtype}.xml"
-        taz_result = build_tazs_for_core(
-            sqlite_path,
+        taz_result = build_tazs_for_core_from_tables(
+            tables,
             net_xml,
             tazs_path,
             core=core,
@@ -231,3 +233,55 @@ def build_demand_from_visum(
         result.routes_path = routes_path
 
     return result
+
+
+def build_demand_from_visum(
+    omx_path: str | Path,
+    sqlite_path: str | Path,
+    net_xml: str | Path,
+    out_dir: str | Path,
+    options: Optional[DemandBuildOptions] = None,
+) -> DemandBuildResult:
+    options = options or DemandBuildOptions()
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    tables = read_zone_connectors(sqlite_path)
+    return _build_demand(
+        Path(omx_path),
+        Path(net_xml),
+        out_dir,
+        tables,
+        options,
+    )
+
+
+def build_demand_from_geojson(
+    omx_path: str | Path,
+    zone_centroid_path: str | Path,
+    connector_path: str | Path,
+    net_xml: str | Path,
+    out_dir: str | Path,
+    options: Optional[DemandBuildOptions] = None,
+) -> DemandBuildResult:
+    """Library entry point: OMX + GeoJSON zones/connectors → demand artifacts."""
+    options = options or DemandBuildOptions()
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    tables, skipped = read_zone_connectors_from_geojson(zone_centroid_path, connector_path)
+    return _build_demand(
+        Path(omx_path),
+        Path(net_xml),
+        out_dir,
+        tables,
+        options,
+        connector_skipped=skipped,
+    )
+
+
+# Re-export for tests that import build_tazs_for_core from demand module paths.
+__all__ = [
+    "DemandBuildOptions",
+    "DemandBuildResult",
+    "build_demand_from_geojson",
+    "build_demand_from_visum",
+]

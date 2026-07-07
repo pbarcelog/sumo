@@ -1,6 +1,6 @@
 # Change: import-network-geojson
 
-**Status:** Proposed
+**Status:** Applied
 **PRD:** §2 (formats), §4 (quality/CRS)
 **ADRs:** 006 (orchestration), 009 (placement), 011 (normalization)
 **Epic:** `gis-api-mvp` — Pillar 1 (network import), Phase 1.
@@ -16,10 +16,10 @@ It also fixes a real translation problem found by inspecting the data: VISUM exp
 - **ADD** `network-import` capability: read VISUM GeoJSON `node`/`link` → build SUMO `net.xml` via `netconvert`.
 - **ADD** a **library-level entry point** (file paths in, `net.xml` + build report out). No HTTP in this change — the FastAPI surface wraps it later.
 - **Import all links and nodes, no mode filtering.** PuT-only links are kept and modelled with `vClass` permissions (ADR-011 §normalization, team decision from data inspection).
-- **Mode → vClass translation** from `TSYSSET` (`CAR→passenger`, `HGV→truck`, `BIKE→bicycle`, `BUS→bus`, `TRAM→tram`, `TRAIN→rail`, `PUTW→pedestrian`); see `data-inventory.md`.
+- **Mode → vClass translation** from `TSYSSET` (`CAR→passenger`, `HGV→truck`, `BIKE→bicycle`, `BUS→bus`, `TRAM→tram`, `TRAIN→rail_urban`, `PUTW→pedestrian`); see `data-inventory.md`.
 - **Directional split**: each VISUM link row yields an AB edge and a reverse edge from `R_*` fields; a direction with empty `TSYSSET` is omitted (one-way).
 - **Speed rule**: edge speed = `V0PRT` (km/h→m/s) when `> 0`; otherwise a documented fallback by link class `LC` (PuT-only links). SQLite import (later change) may replace fallbacks with real PuT speeds.
-- **CRS**: geometry is WGS84 (EPSG:4326); `netconvert` auto-projects to UTM (`--proj.utm`, EPSG:25832 for Karlsruhe). Resolved EPSG is logged (PRD §4, config CRS rule).
+- **CRS**: geometry is WGS84 (EPSG:4326); `netconvert` auto-projects to UTM (`--proj.utm`, EPSG:32632 for the Karlsruhe reference export). Resolved EPSG is logged (PRD §4, config CRS rule).
 - **Control plan stand-in**: `netconvert --tls.guess` synthesises signals; real `CONTROLTYPE`-driven signal import is deferred to `import-control-plan`.
 
 ## Capabilities

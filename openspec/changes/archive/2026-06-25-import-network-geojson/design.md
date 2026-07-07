@@ -50,7 +50,7 @@ def build_network_from_geojson(
     nodes_path: str,
     links_path: str,
     out_dir: str,
-    options: NetworkBuildOptions,
+    options: GeoJsonBuildOptions,
 ) -> NetworkBuildResult: ...
 ```
 
@@ -75,7 +75,7 @@ diverge from that document.
 ### netconvert build (ADR-006)
 
 - Resolve binary via `sumolib.checkBinary('netconvert')`.
-- Invoke with plain-XML inputs, `--proj.utm` (auto-UTM, EPSG:25832 for Karlsruhe), `--tls.guess`.
+- Invoke with plain-XML inputs, `--proj.utm` (auto-UTM, EPSG:32632 for the Karlsruhe reference export), `--tls.guess`.
 - Save a `.netccfg` (osmBuild pattern) and capture stdout/stderr into a build log.
 - Output `net.xml` + build report in `out_dir`.
 
@@ -109,9 +109,12 @@ flowchart TB
 
 Greenfield. No data migration. Requires `SUMO_HOME` (for `netconvert` via `sumolib.checkBinary`).
 
-## Open Questions
+## Resolved decisions (see `data-inventory.md` §11)
 
-- `TRAIN` → `rail` vs `rail_urban` (see data-inventory §4).
-- Whether any shared-corridor links should be merged into multi-`allow` lanes vs kept as separate
-  edges (default: separate edges).
-- Floor for very low real speeds (`2km/h`) — default: keep as-is.
+All open questions from the design phase were closed at modeller sign-off (2026-06-25):
+
+| Question | Resolution |
+|---|---|
+| `TRAIN` → `rail` vs `rail_urban` | **`rail_urban`** — aligned with `import-network-sqlite` |
+| Shared-corridor vs separate edges | **Separate edge per VISUM row** — no lane-level splitting in v1 |
+| Floor for very low real speeds (`2km/h`) | **No floor** — keep parsed `V0PRT` when > 0 |

@@ -2,8 +2,8 @@
 
 """VISUM transport-system (``TSYS``) token to SUMO ``vClass`` translation.
 
-Translation rules are normative in the change ``import-network-sqlite``
-(``data-inventory.md`` section 4). Used by both the GeoJSON and SQLite VISUM
+Translation rules are normative in the change ``import-network-sqlite`` /
+``import-network-geojson`` ``data-inventory.md`` section 4. Used by both VISUM
 network importers.
 """
 
